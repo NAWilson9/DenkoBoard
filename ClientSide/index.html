@@ -11,8 +11,58 @@
         var socket = io.connect('http://localhost:1337');
     </script>
 </head>
-<body>
-    <section id="musicList" class="col-md-4">
+<body class="container-fluid">
+    <section id="center" class="col-xs-12 col-md-6 col-lg-4 col-lg-push-4">
+    <section id="title">
+        <h1>Denko Board</h1>
+        <span>Maverick Image</span>
+        <span>Time</span>
+    </section>
+    <section id="announcements">
+        <article>
+            <h2>Announcement 1 title</h2>
+            <div>Announcement 1 text Announcement 1 text Announcement 1 text</div>
+        </article>
+        <article>
+            <h2>Announcement 2 title</h2>
+            <div>Announcement 2 text Announcement 2 text Announcement 2 text</div>
+        </article>
+        <article>
+            <h2>Announcement 3 title</h2>
+            <div>Announcement 3 text Announcement 3 text Announcement 3 text</div>
+        </article>
+        <article>
+            <h2>Announcement 4 title</h2>
+            <div>Announcement 4 text Announcement 4 text Announcement 4 text</div>
+        </article>
+    </section>
+    <section id="contactInformation">
+        <h2>Contact Information</h2>
+        <ul>
+            <li>
+                <span>4 Help Number</span>
+                <span>1-800-987-9378</span>
+            </li>
+            <li>
+                <span>Office Number</span>
+                <span>1-800-987-9378</span>
+            </li>
+            <li>
+                <span>Cell Number</span>
+                <span>1-800-987-9378</span>
+            </li>
+            <li>
+                <span>Email Address</span>
+                <span>1-800-987-9378</span>
+            </li>
+            <li>
+                <span>Skype Name</span>
+                <span>1-800-987-9378</span>
+            </li>
+        </ul>
+    </section>
+</section>
+    <section id="musicList" class="col-xs-12 col-md-6 col-lg-4 col-lg-pull-4">
         <ul>
             <ul>
                 <li>Song Title 1</li>
@@ -66,57 +116,7 @@
             </ul>
         </ul>
     </section>
-    <section id="center" class="col-md-4">
-        <section id="title">
-            <h1>Denko Board</h1>
-            <span>Maverick Image</span>
-            <span>Time</span>
-        </section>
-        <section id="announcements">
-            <article>
-                <h2>Announcement 1 title</h2>
-                <div>Announcement 1 text Announcement 1 text Announcement 1 text</div>
-            </article>
-            <article>
-                <h2>Announcement 2 title</h2>
-                <div>Announcement 2 text Announcement 2 text Announcement 2 text</div>
-            </article>
-            <article>
-                <h2>Announcement 3 title</h2>
-                <div>Announcement 3 text Announcement 3 text Announcement 3 text</div>
-            </article>
-            <article>
-                <h2>Announcement 4 title</h2>
-                <div>Announcement 4 text Announcement 4 text Announcement 4 text</div>
-            </article>
-        </section>
-        <section id="contactInformation" class="col-md-4">
-            <h2>Contact Information</h2>
-            <ul>
-                <li>
-                    <span>4 Help Number</span>
-                    <span>1-800-987-9378</span>
-                </li>
-                <li>
-                    <span>Office Number</span>
-                    <span>1-800-987-9378</span>
-                </li>
-                <li>
-                    <span>Cell Number</span>
-                    <span>1-800-987-9378</span>
-                </li>
-                <li>
-                    <span>Email Address</span>
-                    <span>1-800-987-9378</span>
-                </li>
-                <li>
-                    <span>Skype Name</span>
-                    <span>1-800-987-9378</span>
-                </li>
-            </ul>
-        </section>
-    </section>
-    <section id="weather" class="col-md-4">
+    <section id="weather" class="col-xs-12 col-lg-4">
         <ul>
             <ul>
                 <li><h2>Current Weather</h2></li>
@@ -170,7 +170,7 @@
             </ul>
         </ul>
     </section>
-    <section id="news" class="col-md-12">
+    <section id="news" class="hidden-xs col-md-12">
         <span>News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News </span>
     </section>
 </body>
