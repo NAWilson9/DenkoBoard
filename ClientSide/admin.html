@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>denkoBoard Admin Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="CSS/normalize.css">
+    <link rel="stylesheet" href="CSS/bootstrap.min.css">
+    <script src="./socket.io/socket.io.js"></script>
+    <script>
+        var socket = io.connect('http://localhost:1337');
+    </script>
+</head>
+<body class="col-md-12">
+    <header>
+        <h1>Denko Board Admin Page</h1>
+        <nav>
+            <a href="index.html">denkoBoard</a>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <h2>Contact Information Editor</h2>
+            <div>
+                <span>4 Help</span>
+                <input type="tel">
+            </div>
+            <div>
+                <span>Office Number</span>
+                <input type="tel">
+            </div>
+            <div>
+                <span>Cell Number</span>
+                <input type="tel">
+            </div>
+            <div>
+                <span>Email Address</span>
+                <input type="text">
+            </div>
+            <div>
+                <span>Skype Name</span>
+                <input type="text">
+            </div>
+        </section>
+        <section>
+            <h2>Announcements Editor</h2>
+            <div>Add new announcement</div>
+            <input type="text">
+            <h3>Announcements</h3>
+            <article>
+                <div>Announcement 1 Title</div>
+                <span>Announcement 1 Text Announcement 1 Text Announcement 1 Text Announcement 1 Text Announcement 1 Text Announcement 1 Text Announcement 1 Text</span>
+            </article>
+            <article>
+                <div>Announcement 2 Title</div>
+                <span>Announcement 2 Text Announcement 2 Text Announcement 2 Text Announcement 2 Text Announcement 2 Text Announcement 2 Text Announcement 2 Text</span>
+            </article>
+            <article>
+                <div>Announcement 3 Title</div>
+                <span>Announcement 3 Text Announcement 3 Text Announcement 3 Text Announcement 3 Text Announcement 3 Text Announcement 3 Text Announcement 3 Text</span>
+            </article>
+            <article>
+                <div>Announcement 4 Title</div>
+                <span>Announcement 4 Text Announcement 4 Text Announcement 4 Text Announcement 4 Text Announcement 4 Text Announcement 4 Text Announcement 4 Text</span>
+            </article>
+        </section>
+    </main>
+</body>
+</html>

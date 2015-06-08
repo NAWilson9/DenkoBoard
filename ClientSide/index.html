@@ -3,12 +3,175 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>denkoBoard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="CSS/normalize.css">
+    <link rel="stylesheet" href="CSS/bootstrap.min.css">
     <script src="./socket.io/socket.io.js"></script>
     <script>
         var socket = io.connect('http://localhost:1337');
     </script>
 </head>
 <body>
-
+    <section id="musicList" class="col-md-4">
+        <ul>
+            <ul>
+                <li>Song Title 1</li>
+                <li>Song Artist 1</li>
+                <span>Song 1 Album Art</span>
+            </ul>
+            <ul>
+                <li>Song Title 2</li>
+                <li>Song Artist 2</li>
+                <span>Song 2 Album Art</span>
+            </ul>
+            <ul>
+                <li>Song Title 3</li>
+                <li>Song Artist 3</li>
+                <span>Song 3 Album Art</span>
+            </ul>
+            <ul>
+                <li>Song Title 4</li>
+                <li>Song Artist 4</li>
+                <span>Song 4 Album Art</span>
+            </ul>
+            <ul>
+                <li>Song Title 5</li>
+                <li>Song Artist 5</li>
+                <span>Song 5 Album Art</span>
+            </ul>
+            <ul>
+                <li>Song Title 6</li>
+                <li>Song Artist 6</li>
+                <span>Song 6 Album Art</span>
+            </ul>
+            <ul>
+                <li>Song Title 7</li>
+                <li>Song Artist 7</li>
+                <span>Song 7 Album Art</span>
+            </ul>
+            <ul>
+                <li>Song Title 8</li>
+                <li>Song Artist 8</li>
+                <span>Song 8 Album Art</span>
+            </ul>
+            <ul>
+                <li>Song Title 9</li>
+                <li>Song Artist 9</li>
+                <span>Song 9 Album Art</span>
+            </ul>
+            <ul>
+                <li>Current song Title</li>
+                <li>Current song Artist 10</li>
+                <span>Current song Album Art</span>
+            </ul>
+        </ul>
+    </section>
+    <section id="center" class="col-md-4">
+        <section id="title">
+            <h1>Denko Board</h1>
+            <span>Maverick Image</span>
+            <span>Time</span>
+        </section>
+        <section id="announcements">
+            <article>
+                <h2>Announcement 1 title</h2>
+                <div>Announcement 1 text Announcement 1 text Announcement 1 text</div>
+            </article>
+            <article>
+                <h2>Announcement 2 title</h2>
+                <div>Announcement 2 text Announcement 2 text Announcement 2 text</div>
+            </article>
+            <article>
+                <h2>Announcement 3 title</h2>
+                <div>Announcement 3 text Announcement 3 text Announcement 3 text</div>
+            </article>
+            <article>
+                <h2>Announcement 4 title</h2>
+                <div>Announcement 4 text Announcement 4 text Announcement 4 text</div>
+            </article>
+        </section>
+        <section id="contactInformation" class="col-md-4">
+            <h2>Contact Information</h2>
+            <ul>
+                <li>
+                    <span>4 Help Number</span>
+                    <span>1-800-987-9378</span>
+                </li>
+                <li>
+                    <span>Office Number</span>
+                    <span>1-800-987-9378</span>
+                </li>
+                <li>
+                    <span>Cell Number</span>
+                    <span>1-800-987-9378</span>
+                </li>
+                <li>
+                    <span>Email Address</span>
+                    <span>1-800-987-9378</span>
+                </li>
+                <li>
+                    <span>Skype Name</span>
+                    <span>1-800-987-9378</span>
+                </li>
+            </ul>
+        </section>
+    </section>
+    <section id="weather" class="col-md-4">
+        <ul>
+            <ul>
+                <li><h2>Current Weather</h2></li>
+                <li><span>Temperature: </span></li>
+                <li><span>Conditions: </span></li>
+            </ul>
+            <ul>
+                <li><h2>Weather</h2></li>
+                <li><span>Temperature: </span></li>
+                <li><span>Conditions: </span></li>
+            </ul>
+            <ul>
+                <li><h2>Weather</h2></li>
+                <li><span>Temperature: </span></li>
+                <li><span>Conditions: </span></li>
+            </ul>
+            <ul>
+                <li><h2>Weather</h2></li>
+                <li><span>Temperature: </span></li>
+                <li><span>Conditions: </span></li>
+            </ul>
+            <ul>
+                <li><h2>Weather</h2></li>
+                <li><span>Temperature: </span></li>
+                <li><span>Conditions: </span></li>
+            </ul>
+            <ul>
+                <li><h2>Weather</h2></li>
+                <li><span>Temperature: </span></li>
+                <li><span>Conditions: </span></li>
+            </ul>
+            <ul>
+                <li><h2>Weather</h2></li>
+                <li><span>Temperature: </span></li>
+                <li><span>Conditions: </span></li>
+            </ul>
+            <ul>
+                <li><h2>Weather</h2></li>
+                <li><span>Temperature: </span></li>
+                <li><span>Conditions: </span></li>
+            </ul>
+            <ul>
+                <li><h2>Weather</h2></li>
+                <li><span>Temperature: </span></li>
+                <li><span>Conditions: </span></li>
+            </ul>
+            <ul>
+                <li><h2>Weather</h2></li>
+                <li><span>Temperature: </span></li>
+                <li><span>Conditions: </span></li>
+            </ul>
+        </ul>
+    </section>
+    <section id="news" class="col-md-12">
+        <span>News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News </span>
+    </section>
 </body>
 </html>

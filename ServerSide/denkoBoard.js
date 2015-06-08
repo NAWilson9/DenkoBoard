@@ -11,7 +11,7 @@ app.use(express.static('../ClientSide/'));
 
 //Start web server
 var server = app.listen(port, function () {
-    console.log('denkoBoard server running on port ' + port);
+    console.log('Denko Board server running on port ' + port);
 });
 
 /*
