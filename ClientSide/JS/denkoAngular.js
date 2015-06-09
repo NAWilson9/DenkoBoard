@@ -2,21 +2,17 @@
  * Created by Nick on 6/8/2015.
  */
 (function(){
-    //Module definition
     var app = angular.module('denkoAngular', []);
-
-    //Controllers
     app.controller('musicController', function(){
         this.songs = songs;
     });
 
     app.controller('weatherController', function(){
-        this.weather = {};
-        socket.on('updateWeather', function(weather){
-            this.weather = weather;
-            console.log(JSON.stringify(weather));
-            console.log('Weather update received');
-        });
+        this.weather = weather;
+        socket.on('updateWeather', function(data){
+            console.log(JSON.stringify(data));
+            this.weather = false;
+        })
     });
 
     app.controller('infoController', function(){
@@ -24,7 +20,6 @@
         this.contactInformation = contactInformation;
     });
 
-    //Data
     var songs = [
         { title: 'Summer', artist: 'Calvin Harris', albumArt: ''},
         { title: 'Detonate', artist: 'Netsky', albumArt: ''},
@@ -36,6 +31,19 @@
         { title: '1234', artist: 'Rockwell', albumArt: ''},
         { title: 'INeedU', artist: 'Rockwell', albumArt: ''},
         { title: 'Atlantis', artist: 'Enei', albumArt: ''}
+    ];
+
+    var weather = [
+        { time: '8:00AM', temperature: '72F', conditions: 'Sunny', conditionsImage: ''},
+        { time: '9:00AM', temperature: '72F', conditions: 'Sunny', conditionsImage: ''},
+        { time: '10:00AM', temperature: '73F', conditions: 'Sunny', conditionsImage: ''},
+        { time: '11:00AM', temperature: '73F', conditions: 'Sunny', conditionsImage: ''},
+        { time: '12:00PM', temperature: '74F', conditions: 'Sunny', conditionsImage: ''},
+        { time: '1:00PM', temperature: '74F', conditions: 'Sunny', conditionsImage: ''},
+        { time: '2:00PM', temperature: '75F', conditions: 'Sunny', conditionsImage: ''},
+        { time: '3:00PM', temperature: '74F', conditions: 'Sunny', conditionsImage: ''},
+        { time: '4:00PM', temperature: '73F', conditions: 'Sunny', conditionsImage: ''},
+        { time: '5:00PM', temperature: '72F', conditions: 'Sunny', conditionsImage: ''}
     ];
 
     var announcements = [

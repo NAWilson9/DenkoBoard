@@ -55,13 +55,14 @@
     </section>
     <section id="weather" class="col-xs-12 col-lg-4" ng-controller="weatherController as weather">
         <ul >
+            <!--
             <li>{{weather.weather}}
                 <p>Time: {{weather.weather.currentWeather.time}}</p>
                 <p>Temperature: {{weather.weather.currentWeather.temperature}}</p>
                 <p>Conditions: {{weather.weather.currentWeather.conditions}}</p>
                 <img ng-show="weather.weather.currentWeather.conditionsImage" ng-src="{{weather.weather.currentWeather.conditionsImage}}">
-            </li>
-            <li ng-repeat="hour in weather.weather.hours">
+            </li> -->
+            <li ng-repeat="hour in weather.weather">
                 <p>Time: {{hour.time}}</p>
                 <p>Temperature: {{hour.temperature}}</p>
                 <p>Conditions: {{hour.conditions}}</p>
