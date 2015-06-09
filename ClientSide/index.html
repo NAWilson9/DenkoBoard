@@ -12,17 +12,18 @@
     <!-- Script stuff -->
     <script src="JS/angular.js"></script>
     <script src="JS/denkoAngular.js"></script>
+    <script src="JS/denko.js"></script>
     <script src="./socket.io/socket.io.js"></script>
     <script>
         var socket = io.connect(window.location.origin);
     </script>
 </head>
-<body class="container-fluid">
-    <section id="info" class="col-xs-12 col-md-6 col-lg-4 col-lg-push-4 center-block" ng-controller="infoController as info">
+<body class="container-fluid" onload="initialize()">
+    <section id="info" class="col-xs-12 col-md-6 col-lg-4 col-lg-push-4" ng-controller="infoController as info">
         <section id="title">
             <h1>Denko Board</h1>
             <span>Maverick Image</span>
-            <span>Time</span>
+            <span onclick="test()">Time <span id="time"></span></span>
         </section>
         <section id="announcements">
             <ul>
@@ -43,7 +44,7 @@
             </ul>
         </section>
     </section>
-    <section id="musicList" class="col-xs-12 col-md-6 col-lg-4 col-lg-pull-4 center-block" ng-controller="musicController as music">
+    <section id="musicList" class="col-xs-12 col-md-6 col-lg-4 col-lg-pull-4" ng-controller="musicController as music">
         <ul>
             <li ng-repeat="song in music.songs">
                 <p>Track: {{song.title}}</p>
@@ -52,17 +53,23 @@
             </li>
         </ul>
     </section>
-    <section id="weather" class="col-xs-12 col-lg-4 center-block" ng-controller="weatherController as weather">
-        <ul ng-repeat="conditions in weather.weather">
-            <li>
-                <p>Time: {{conditions.time}}</p>
-                <p>Temperature: {{conditions.temperature}}</p>
-                <p>Conditions: {{conditions.temperature}}</p>
-                <img ng-show="conditions.conditionsImage" ng-src="{{conditions.conditionsImage}}">
+    <section id="weather" class="col-xs-12 col-lg-4" ng-controller="weatherController as weather">
+        <ul >
+            <li>{{weather.weather}}
+                <p>Time: {{weather.weather.currentWeather.time}}</p>
+                <p>Temperature: {{weather.weather.currentWeather.temperature}}</p>
+                <p>Conditions: {{weather.weather.currentWeather.conditions}}</p>
+                <img ng-show="weather.weather.currentWeather.conditionsImage" ng-src="{{weather.weather.currentWeather.conditionsImage}}">
+            </li>
+            <li ng-repeat="hour in weather.weather.hours">
+                <p>Time: {{hour.time}}</p>
+                <p>Temperature: {{hour.temperature}}</p>
+                <p>Conditions: {{hour.conditions}}</p>
+                <img ng-show="hour.conditionsImage" ng-src="{{hour.conditionsImage}}">
             </li>
         </ul>
     </section>
-    <section id="news" class="hidden-xs col-md-12 center-block">
+    <section id="news" class="hidden-xs col-md-12">
         <span>News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News </span>
     </section>
 </body>
