@@ -46,17 +46,19 @@
     <section id="musicList" class="col-xs-12 col-md-6 col-lg-4 col-lg-pull-4 center-block" ng-controller="musicController as music">
         <ul>
             <li ng-repeat="song in music.songs">
-                <p>{{'Track: ' + song.title}}</p>
-                <p>{{'Artist: ' + song.artist}}</p>
+                <p>Track: {{song.title}}</p>
+                <p>Artist: {{song.artist}}</p>
+                <img ng-show="song.albumArt" ng-src="{{song.albumArt}}">
             </li>
         </ul>
     </section>
     <section id="weather" class="col-xs-12 col-lg-4 center-block" ng-controller="weatherController as weather">
         <ul ng-repeat="conditions in weather.weather">
             <li>
-                <p>{{'Time: ' + conditions.time}}</p>
-                <p>{{'Temperature: ' + conditions.temperature}}</p>
-                <p>{{'Conditions: ' + conditions.temperature}}</p>
+                <p>Time: {{conditions.time}}</p>
+                <p>Temperature: {{conditions.temperature}}</p>
+                <p>Conditions: {{conditions.temperature}}</p>
+                <img ng-show="conditions.conditionsImage" ng-src="{{conditions.conditionsImage}}">
             </li>
         </ul>
     </section>
