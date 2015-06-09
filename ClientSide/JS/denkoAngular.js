@@ -54,6 +54,6 @@
         { type: 'Office Number', value: '123-456-7890'},
         { type: 'Cell Number', value: '123-456-7890'},
         { type: 'Email Address', value: 'Bossman@email.com'},
-        { type: 'Skype Name', value: 'Boss@email.com'}
+        { type: 'Skype Name', value: 'Boss.man'}
     ];
 })();
