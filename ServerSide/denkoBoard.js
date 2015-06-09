@@ -14,6 +14,10 @@ var forecastAPIKey = '285d7483f9acc0b5ddf7066e1e238e29';
 var forecast = new Forecast({APIKey: forecastAPIKey});
 var latitude = 42.01915;
 var longitude = -93.64638;
+var hoursToShow = 8;
+var imageClearPath = '/Images/WeatherThumbnails/sunny.png';
+var imageCloudPath = '/Images/WeatherThumbnails/cloudy.png';
+var imageRainPath = '/Images/WeatherThumbnails/rain.png';
 var weather = {};
 
 app.use(express.static('../ClientSide/', {
@@ -46,12 +50,13 @@ var getWeather = function(){
         };
 
         //Current weather assignment
-        //weather.currentWeather.time = new Date(data.currently.time * 1000).toLocaleTimeString();
-        weather.currentWeather.temperature = data.currently.temperature;
+        weather.currentWeather.time = new Date(data.currently.time * 1000).toLocaleTimeString();
+        weather.currentWeather.temperature = Math.round(data.currently.temperature);
         weather.currentWeather.conditions = data.currently.summary;
+        weather.currentWeather.image = (data.currently.summary == 'Clear') ? imageClearPath : (data.currently.summary.indexOf('rain')) ? imageRainPath : imageCloudPath;
 
         //Hourly weather handling
-        for(var i = 0; i < data.hourly.data.length; i++) {
+        for(var i = 0; i < data.hourly.data.length && i < hoursToShow - 1; i++) {
             //Current hour
             var hour = data.hourly.data[i];
             var dateObj = new Date(hour.time * 1000);
@@ -60,11 +65,12 @@ var getWeather = function(){
             var hourObj = {
                 'date': dateObj.toLocaleDateString(),
                 'time': dateObj.toLocaleTimeString(),
-                'temperature': hour.temperature,
-                'conditions': hour.summary
+                'temperature': Math.round(hour.temperature),
+                'conditions': hour.summary,
+                'image': (hour.summary == 'Clear') ? imageClearPath : (hour.summary.indexOf('rain')) ? imageRainPath : imageCloudPath
             };
             weather.hours.push(hourObj);
-        }
+        } //http://www.skibowl.com/weather/weather-icons-thumbnails/
     });
     //Schedules weather refresh every 15 minutes
     //setTimeout(getWeather(), 900000);

@@ -4,6 +4,7 @@
     <!-- Metadata stuff -->
     <meta charset="UTF-8">
     <title>denkoBoard</title>
+    <link rel="icon" type="image/png" href="Images/Favicons/favicon.ico">
     <!-- Style stuff -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="CSS/normalize.css">
@@ -55,18 +56,17 @@
     </section>
     <section id="weather" class="col-xs-12 col-lg-4" ng-controller="weatherController">
         <ul >
-            <!--
-            <li>
+            <li ng-show="weather.currentWeather">
                 <p>Time: {{weather.currentWeather.time}}</p>
-                <p>Temperature: {{weather.currentWeather.temperature}}</p>
+                <p>Temperature: {{weather.currentWeather.temperature}} &#8457;</p>
                 <p>Conditions: {{weather.currentWeather.conditions}}</p>
-                <img ng-show="weather.currentWeather.conditionsImage" ng-src="{{weather.currentWeather.conditionsImage}}">
-            </li> -->
-            <li ng-repeat="hour in weather">
+                <img ng-show="weather.currentWeather.image" ng-src="{{weather.currentWeather.image}}">
+            </li>
+            <li ng-repeat="hour in weather.hours" ng-limit>
                 <p>Time: {{hour.time}}</p>
-                <p>Temperature: {{hour.temperature}}</p>
+                <p>Temperature: {{hour.temperature}} &#8457;</p>
                 <p>Conditions: {{hour.conditions}}</p>
-                <img ng-show="hour.conditionsImage" ng-src="{{hour.conditionsImage}}">
+                <img ng-show="hour.image" ng-src="{{hour.image}}">
             </li>
         </ul>
     </section>
