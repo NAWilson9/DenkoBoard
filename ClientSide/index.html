@@ -14,7 +14,7 @@
     <script src="JS/denkoAngular.js"></script>
     <script src="./socket.io/socket.io.js"></script>
     <script>
-        var socket = io.connect('http://localhost:1337');
+        var socket = io.connect(window.location.origin);
     </script>
 </head>
 <body class="container-fluid">

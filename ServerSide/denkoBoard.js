@@ -7,7 +7,9 @@ var express = require('express');
 //Setup server
 var app = express();
 var port = 1337;
-app.use(express.static('../ClientSide/'));
+app.use(express.static('../ClientSide/', {
+    extensions: ['html']
+}));
 
 //Start web server
 var server = app.listen(port, function () {
