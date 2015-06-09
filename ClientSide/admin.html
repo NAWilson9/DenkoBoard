@@ -1,11 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="denkoAngular">
 <head lang="en">
+    <!-- Metadata stuff -->
     <meta charset="UTF-8">
     <title>denkoBoard Admin Page</title>
+    <!-- Style stuff -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="CSS/normalize.css">
     <link rel="stylesheet" href="CSS/bootstrap.min.css">
+    <link rel="stylesheet" href="CSS/customStyle.css">
+    <!-- Script stuff -->
+    <script src="JS/angular.js"></script>
+    <script src="JS/denkoAngular.js"></script>
     <script src="./socket.io/socket.io.js"></script>
     <script>
         var socket = io.connect('http://localhost:1337');
