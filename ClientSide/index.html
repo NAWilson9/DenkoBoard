@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="denkoAngular">
+<html ng-app="test">
 <head lang="en">
     <!-- Metadata stuff -->
     <meta charset="UTF-8">
@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="CSS/customStyle.css">
     <!-- Script stuff -->
     <script src="JS/angular.js"></script>
-    <script src="JS/denkoAngular.js"></script>
+    <script src="JS/test.js"></script>
     <script src="JS/denko.js"></script>
     <script src="./socket.io/socket.io.js"></script>
     <script>
@@ -19,7 +19,7 @@
     </script>
 </head>
 <body class="container-fluid" onload="initialize()">
-    <section id="info" class="col-xs-12 col-md-6 col-lg-4 col-lg-push-4" ng-controller="infoController as info">
+    <section id="info" class="col-xs-12 col-md-6 col-lg-4 col-lg-push-4" ng-controller="infoController">
         <section id="title">
             <h1>Denko Board</h1>
             <span>Maverick Image</span>
@@ -27,7 +27,7 @@
         </section>
         <section id="announcements">
             <ul>
-                <li ng-repeat="announcement in info.announcements">
+                <li ng-repeat="announcement in announcements">
                     <h2>{{announcement.title}}</h2>
                     <p>{{announcement.comment}}</p>
                 </li>
@@ -37,32 +37,32 @@
         <section id="contactInformation">
             <h2>Contact Information</h2>
             <ul>
-                <li ng-repeat="contact in info.contactInformation">
+                <li ng-repeat="contact in contactInformation">
                     <span>{{contact.type}}</span>
                     <span>{{contact.value}}</span>
                 </li>
             </ul>
         </section>
     </section>
-    <section id="musicList" class="col-xs-12 col-md-6 col-lg-4 col-lg-pull-4" ng-controller="musicController as music">
+    <section id="musicList" class="col-xs-12 col-md-6 col-lg-4 col-lg-pull-4" ng-controller="musicController">
         <ul>
-            <li ng-repeat="song in music.songs">
+            <li ng-repeat="song in songs">
                 <p>Track: {{song.title}}</p>
                 <p>Artist: {{song.artist}}</p>
                 <img ng-show="song.albumArt" ng-src="{{song.albumArt}}">
             </li>
         </ul>
     </section>
-    <section id="weather" class="col-xs-12 col-lg-4" ng-controller="weatherController as weather">
+    <section id="weather" class="col-xs-12 col-lg-4" ng-controller="weatherController">
         <ul >
             <!--
-            <li>{{weather.weather}}
-                <p>Time: {{weather.weather.currentWeather.time}}</p>
-                <p>Temperature: {{weather.weather.currentWeather.temperature}}</p>
-                <p>Conditions: {{weather.weather.currentWeather.conditions}}</p>
-                <img ng-show="weather.weather.currentWeather.conditionsImage" ng-src="{{weather.weather.currentWeather.conditionsImage}}">
+            <li>
+                <p>Time: {{weather.currentWeather.time}}</p>
+                <p>Temperature: {{weather.currentWeather.temperature}}</p>
+                <p>Conditions: {{weather.currentWeather.conditions}}</p>
+                <img ng-show="weather.currentWeather.conditionsImage" ng-src="{{weather.currentWeather.conditionsImage}}">
             </li> -->
-            <li ng-repeat="hour in weather.weather">
+            <li ng-repeat="hour in weather">
                 <p>Time: {{hour.time}}</p>
                 <p>Temperature: {{hour.temperature}}</p>
                 <p>Conditions: {{hour.conditions}}</p>
