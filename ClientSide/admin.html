@@ -13,6 +13,7 @@
     <!-- Script stuff -->
     <script src="JS/angular.js"></script>
     <script src="JS/denkoApp.js"></script>
+    <script src="JS/utils.js"></script>
     <script src="./socket.io/socket.io.js"></script>
     <script>
         var socket = io.connect(window.location.origin);
@@ -22,55 +23,31 @@
     <header class="col-xs-12">
         <h1>Denko-Board Admin Page <small><a href="/">Denko-Board</a></small></h1>
     </header>
-    <main>
+    <main ng-controller="adminController">
         <section class="col-xs-12 col-lg-4">
             <h2>Contact Information Editor</h2>
-            <div>
-                <span>4 Help</span>
-                <input type="tel">
-            </div>
-            <div>
-                <span>Office Number</span>
-                <input type="tel">
-            </div>
-            <div>
-                <span>Cell Number</span>
-                <input type="tel">
-            </div>
-            <div>
-                <span>Email Address</span>
-                <input type="text">
-            </div>
-            <div>
-                <span>Skype Name</span>
-                <input type="text">
-            </div>
-            <div>
-                <span>Zip Code</span>
-                <input type="text">
-            </div>
+            <ul>
+                <li name="contact" ng-repeat="contact in contactInformation">
+                    <form>
+                        <label>{{contact.type}} </label>
+                        <input type="text"  ng-value="contact.value">
+                    </form>
+                </li>
+            </ul>
+            <button onclick="contactsSubmit()">Submit</button>
         </section>
         <section class="col-xs-12 col-lg-6">
             <h2>Announcements Editor</h2>
             <div>Add new announcement</div>
             <input type="text">
             <h3>Announcements</h3>
-            <article>
-                <div>Announcement 1 Title</div>
-                <span>Announcement 1 Text Announcement 1 Text Announcement 1 Text Announcement 1 Text Announcement 1 Text Announcement 1 Text Announcement 1 Text</span>
-            </article>
-            <article>
-                <div>Announcement 2 Title</div>
-                <span>Announcement 2 Text Announcement 2 Text Announcement 2 Text Announcement 2 Text Announcement 2 Text Announcement 2 Text Announcement 2 Text</span>
-            </article>
-            <article>
-                <div>Announcement 3 Title</div>
-                <span>Announcement 3 Text Announcement 3 Text Announcement 3 Text Announcement 3 Text Announcement 3 Text Announcement 3 Text Announcement 3 Text</span>
-            </article>
-            <article>
-                <div>Announcement 4 Title</div>
-                <span>Announcement 4 Text Announcement 4 Text Announcement 4 Text Announcement 4 Text Announcement 4 Text Announcement 4 Text Announcement 4 Text</span>
-            </article>
+            <ul>
+                <li name="announcements" ng-repeat="announcement in announcements">
+                    <h4>{{announcement.title}}</h4>
+                    <P>{{announcement.content}}</P>
+                </li>
+            </ul>
+            <button onclick="announcementsSubmit()">Submit</button>
         </section>
     </main>
 </body>

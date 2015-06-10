@@ -19,6 +19,47 @@ app.controller('weatherController' , function($scope) {
     });
 });
 
+app.controller('adminController', function($scope){
+    /*$scope.contactInformation = [
+        { type: '4 Help Number', value: '123-456-7890'},
+        { type: 'Office Number', value: '123-456-7890'},
+        { type: 'Cell Number', value: '123-456-7890'},
+        { type: 'Email Address', value: 'Bossman@email.com'},
+        { type: 'Skype Name', value: 'Boss.man'}
+    ];*/
+
+   socket.on('updateContactInfo', function(data){
+        console.log('Updated contact info has been received');
+        if(data.contacts.length){
+            $scope.contactInformation = data.contacts;
+            $scope.$apply();
+        } else {
+            console.log('Received weather object was blank. Trying again...');
+            setTimeout(function(){ socket.emit('getContactInformation');}, 1000);
+        }
+   });
+
+    $scope.announcements = [
+        {'title': 'titletitle', 'content': 'announcementannouncementannouncementannouncement'},
+        {'title': 'titletitle', 'content': 'announcementannouncementannouncementannouncement'},
+        {'title': 'titletitle', 'content': 'announcementannouncementannouncementannouncement'},
+        {'title': 'titletitle', 'content': 'announcementannouncementannouncementannouncement'}
+    ];
+
+
+
+    socket.on('updateAnnouncements', function(data){
+        console.log('Updated announcements have been received');
+        if(data.announcements.length){
+            $scope.announcements = data.announcements;
+            $scope.$apply();
+        } else {
+            console.log('Received announcement object was blank. Trying again...');
+            setTimeout(function(){ socket.emit('getAnnouncements');}, 1000);
+        }
+    });
+});
+
 //Controller for all music aspects
 app.controller('musicController', function($scope){
     $scope.songs = [

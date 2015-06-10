@@ -4,6 +4,7 @@
 //Link dependencies
 var express = require('express');
 var Forecast = require('forecast.io');
+var fs = require('fs');
 
 //Setup server
 var app = express();
@@ -23,6 +24,8 @@ var weather = {
     alerts: []
 };
 
+var contactInformation;
+
 app.use(express.static('../ClientSide/', {
     extensions: ['html']
 }));
@@ -31,6 +34,7 @@ app.use(express.static('../ClientSide/', {
 var server = app.listen(port, function () {
     //Initialize
     getWeather();
+    getContacts();
 
     //Server started
     console.log('Denko-Board server running on port ' + port);
@@ -113,6 +117,29 @@ var getWeather = function(){
     setTimeout(getWeather, 180000);
 };
 
+//Updates contactInformation with values in file and sends to all clients
+var getContacts = function(){
+    fs.readFile('contactInformation.json', function(err, data){
+        if(err){
+            console.log(err);
+        } else{
+            contactInformation = JSON.parse(data);
+            io.emit('updateContactInfo', contactInformation);
+        }
+    });
+};
+
+//Writes new contact info to file and calls getContacts()
+var setContacts = function(contacts){
+    fs.writeFile('contactInformation.json', JSON.stringify(contacts, null, 4), function(err){
+        if(err) {
+             console.log(err);
+        } else{
+            getContacts();
+        }
+    });
+};
+
 /*
  Websocket stuff
  */
@@ -124,11 +151,27 @@ var io = require('socket.io').listen(server);
 io.on('connection', function (socket) {
     users++;
     console.log('A user has connected. Total users: ' + users);
-    //Instantly sends weather info to user as soon as they connect
+    //On connect, send client current info
     socket.emit('updateWeather', weather);
+    socket.emit('updateContactInfo', contactInformation);
 
+    /*
+    ** Client Requests
+    */
+
+    //Request for current weather condiitons
     socket.on('getWeather', function(){
         socket.emit('updateWeather', weather)
+    });
+
+    //Request for current contact information
+    socket.on('getContactInformation', function(){
+       socket.emit('updateContactInfo', contactInformation);
+    });
+
+    //Sets updated contact information
+    socket.on('updateContacts', function(data){
+        setContacts(data);
     });
 
     //A user has disconnected
