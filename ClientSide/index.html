@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="test">
+<html ng-app="DenkoApp">
 <head lang="en">
     <!-- Metadata stuff -->
     <meta charset="UTF-8">
@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="CSS/customStyle.css">
     <!-- Script stuff -->
     <script src="JS/angular.js"></script>
-    <script src="JS/test.js"></script>
-    <script src="JS/denko.js"></script>
+    <script src="JS/denkoApp.js"></script>
+    <script src="JS/utils.js"></script>
     <script src="./socket.io/socket.io.js"></script>
     <script>
         var socket = io.connect(window.location.origin);
@@ -22,7 +22,7 @@
 <body class="container-fluid" onload="initialize()">
     <section id="info" class="col-xs-12 col-md-6 col-lg-4 col-lg-push-4" ng-controller="infoController">
         <section id="title">
-            <h1>Denko Board</h1>
+            <h1 onclick="hype()">Denko Board</h1>
             <span>Maverick Image</span>
             <span onclick="test()">Time <span id="time"></span></span>
         </section>
@@ -55,18 +55,18 @@
         </ul>
     </section>
     <section id="weather" class="col-xs-12 col-lg-4" ng-controller="weatherController">
-        <ul >
-            <li ng-show="weather.currentWeather">
-                <p>Time: {{weather.currentWeather.time}}</p>
-                <p>Temperature: {{weather.currentWeather.temperature}} &#8457;</p>
-                <p>Conditions: {{weather.currentWeather.conditions}}</p>
-                <img ng-show="weather.currentWeather.image" ng-src="{{weather.currentWeather.image}}">
+        <ul ng-show="weather">
+            <li>
+                <p>Time: {{weather.currently.time}}</p>
+                <p>Temperature: {{weather.currently.temperature}} &#8457;</p>
+                <p>Conditions: {{weather.currently.conditions}}</p>
+                <img ng-src="{{weather.currently.image}}">
             </li>
-            <li ng-repeat="hour in weather.hours" ng-limit>
+            <li ng-repeat="hour in weather.hourly">
                 <p>Time: {{hour.time}}</p>
                 <p>Temperature: {{hour.temperature}} &#8457;</p>
                 <p>Conditions: {{hour.conditions}}</p>
-                <img ng-show="hour.image" ng-src="{{hour.image}}">
+                <img ng-src="{{hour.image}}">
             </li>
         </ul>
     </section>
