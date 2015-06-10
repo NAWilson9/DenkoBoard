@@ -8,9 +8,16 @@ var app = angular.module('DenkoApp', []);
 //Controller for all weather aspects
 app.controller('weatherController' , function($scope) {
     socket.on('updateWeather', function (data) {
-        console.log('New weather information received');
-        $scope.weather = data;
-        $scope.$apply();
+        console.log('Updated weather information has been received');
+        if(data.currently){
+            $scope.weather = data;
+            $scope.$apply();
+        } else {
+            console.log('Received weather object was blank. Trying again...');
+            setTimeout(function(){ socket.emit('getWeather');}, 1000);
+            $scope.weather = null;
+            $scope.$apply()
+        }
     });
 });
 
@@ -32,20 +39,18 @@ app.controller('musicController', function($scope){
 
 //Controller for all information aspects
 app.controller('infoController', function($scope){
-    var announcements = [
+    $scope.announcements = [
         { title: 'Time', comment: 'Get your time in by Friday'},
         { title: 'OOO', comment: "I'll be OOO Wednesday - Friday. Skype me if you have any problems"},
         { title: 'Pizza', comment: 'Pizza today!'}
     ];
-    var contactInformation = [
+    $scope.contactInformation = [
         { type: '4 Help Number', value: '123-456-7890'},
         { type: 'Office Number', value: '123-456-7890'},
         { type: 'Cell Number', value: '123-456-7890'},
         { type: 'Email Address', value: 'Bossman@email.com'},
         { type: 'Skype Name', value: 'Boss.man'}
     ];
-    $scope.announcements = announcements;
-    $scope.contactInformation = contactInformation;
 });
 
 

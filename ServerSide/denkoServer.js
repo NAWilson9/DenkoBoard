@@ -33,7 +33,7 @@ var server = app.listen(port, function () {
     getWeather();
 
     //Server started
-    console.log('Denko Board server running on port ' + port);
+    console.log('Denko-Board server running on port ' + port);
 });
 
 //Gets weather from server and parses it
@@ -47,12 +47,15 @@ var getWeather = function(){
 
     //Performs request and parses data
     forecast.get(latitude, longitude, forecastOptions, function( err, res, data){
-        if (err) throw err;
+        if (err) throw err; //Todo need proper error handling here
 
         //Currently weather handling
         if(data.currently){
             var currently = data.currently;
             var currentDate = new Date(currently.time * 1000);
+            currentDate.setMinutes(0);
+            currentDate.setSeconds(0);
+            currentDate.setMilliseconds(0);
             weather.currently = {
                 'date': (currently.time) ? currentDate.toLocaleDateString() : 'ERROR',
                 'time': (currently.time) ? currentDate.toLocaleTimeString() : 'ERROR',
@@ -61,6 +64,8 @@ var getWeather = function(){
                 'image': (currently.icon) ? weatherImageSet + currently.icon + '.png' : ''
             };
         }
+
+        //Todo how should errors be dealt with client side?
 
         //Hourly weather handling
         if(data.hourly){
@@ -74,8 +79,8 @@ var getWeather = function(){
                     'conditions': (hourly.summary) ? hourly.summary : 'ERROR',
                     'image': (hourly.icon) ? weatherImageSet + hourly.icon + '.png' : ''
                 };
-                //Todo Needs proper error checking
-                if(hourObj.time.charAt(0) != weather.currently.time.charAt(0)){
+                //Todo Needs proper error checking. What if one doesn't have time?
+                if(hourObj.time.substring(0,2) != weather.currently.time.substring(0,2)){
                     weather.hourly.push(hourObj);
                     j++;
                 }
@@ -98,10 +103,12 @@ var getWeather = function(){
             }
         }
     });
-    //Weather was retrieved and parsed successfully
-    console.log('Weather refreshed');
+    //Pushes new weather info to all clients
+    io.emit('updateWeather', weather);
+    //Weather was retrieved, parsed, and pushed successfully
+    console.log('Updated weather conditions received, parsed, and pushed');
     //Schedules weather refresh every 3 minutes
-    setTimeout(getWeather, 300000);
+    setTimeout(getWeather, 180000);
 };
 
 /*
@@ -115,10 +122,11 @@ var io = require('socket.io').listen(server);
 io.on('connection', function (socket) {
     users++;
     console.log('A user has connected. Total users: ' + users);
+    //Instantly sends weather info to user as soon as they connect
+    socket.emit('updateWeather', weather);
 
-    //Responds to weather refresh requests and returns the forecast
     socket.on('getWeather', function(){
-       socket.emit('updateWeather', weather);
+        socket.emit('updateWeather', weather)
     });
 
     //A user has disconnected

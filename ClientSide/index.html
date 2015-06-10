@@ -3,7 +3,7 @@
 <head lang="en">
     <!-- Metadata stuff -->
     <meta charset="UTF-8">
-    <title>denkoBoard</title>
+    <title>Denko-Board</title>
     <link rel="icon" type="image/png" href="Images/Favicons/favicon.ico">
     <!-- Style stuff -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -22,7 +22,7 @@
 <body class="container-fluid" onload="initialize()">
     <section id="info" class="col-xs-12 col-md-6 col-lg-4 col-lg-push-4" ng-controller="infoController">
         <section id="title">
-            <h1 onclick="hype()">Denko Board</h1>
+            <h1 onclick="hype()">Denko-Board</h1>
             <span>Maverick Image</span>
             <span onclick="test()">Time <span id="time"></span></span>
         </section>
@@ -55,18 +55,26 @@
         </ul>
     </section>
     <section id="weather" class="col-xs-12 col-lg-4" ng-controller="weatherController">
-        <ul ng-show="weather">
-            <li>
-                <p>Time: {{weather.currently.time}}</p>
-                <p>Temperature: {{weather.currently.temperature}} &#8457;</p>
-                <p>Conditions: {{weather.currently.conditions}}</p>
-                <img ng-src="{{weather.currently.image}}">
+        <ul class="container-fluid" ng-show="weather.currently">
+            <li class="row weatherList">
+                <ul class="col-xs-6">
+                    <li>Time: {{weather.currently.time}}</li>
+                    <li>Temperature: {{weather.currently.temperature}} &#8457;</li>
+                    <li>Conditions: {{weather.currently.conditions}}</li>
+                </ul>
+                <span class="col-xs-6">
+                    <img ng-src="{{weather.currently.image}}">
+                </span>
             </li>
-            <li ng-repeat="hour in weather.hourly">
-                <p>Time: {{hour.time}}</p>
-                <p>Temperature: {{hour.temperature}} &#8457;</p>
-                <p>Conditions: {{hour.conditions}}</p>
-                <img ng-src="{{hour.image}}">
+            <li class="row weatherList" ng-repeat="hour in weather.hourly">
+                <ul class="col-xs-6">
+                    <li>Time: {{hour.time}}</li>
+                    <li>Temperature: {{hour.temperature}} &#8457;</li>
+                    <li>Conditions: {{hour.conditions}}</li>
+                </ul>
+                <span class="col-xs-6">
+                    <img ng-src="{{hour.image}}">
+                </span>
             </li>
         </ul>
     </section>

@@ -4,7 +4,7 @@
 
 var initialize = function(){
     updateTime();
-    socket.emit('getWeather');
+    //socket.emit('getWeather');
 };
 
 //Get's the current time and updates the time element every second
