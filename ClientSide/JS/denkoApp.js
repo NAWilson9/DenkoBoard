@@ -15,8 +15,6 @@ app.controller('weatherController' , function($scope) {
         } else {
             console.log('Received weather object was blank. Trying again...');
             setTimeout(function(){ socket.emit('getWeather');}, 1000);
-            $scope.weather = null;
-            $scope.$apply()
         }
     });
 });
