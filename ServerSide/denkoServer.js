@@ -68,6 +68,7 @@ var getWeather = function(){
         //Todo how should errors be dealt with client side?
 
         //Hourly weather handling
+        weather.hourly = [];
         if(data.hourly){
             for(var i = 0, j = 0; i < data.hourly.data.length && j < hoursToShow - 1; i++) {
                 var hourly = data.hourly.data[i];
@@ -88,6 +89,7 @@ var getWeather = function(){
         }
 
         //Severe weather alert handling
+        weather.alert = [];
         if(data.alerts){
             for(var k = 0; k < data.alerts.length; k++){
                 var alert = data.alerts[k];
