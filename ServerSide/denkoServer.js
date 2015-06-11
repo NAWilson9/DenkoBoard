@@ -25,6 +25,7 @@ var weather = {
 };
 
 var contactInformation;
+var announcements;
 
 app.use(express.static('../ClientSide/', {
     extensions: ['html']
@@ -35,6 +36,7 @@ var server = app.listen(port, function () {
     //Initialize
     getWeather();
     getContacts();
+    getAnnouncements();
 
     //Server started
     console.log('Denko-Board server running on port ' + port);
@@ -140,6 +142,29 @@ var setContacts = function(contacts){
     });
 };
 
+//Updates contactInformation with values in file and sends to all clients
+var getAnnouncements = function(){
+    fs.readFile('announcements.json', function(err, data){
+        if(err){
+            console.log(err);
+        } else{
+            announcements = JSON.parse(data);
+            io.emit('updateAnnouncements', announcements);
+        }
+    });
+};
+
+//Writes new contact info to file and calls getContacts()
+var setAnnouncements = function(announcements){
+    fs.writeFile('announcements.json', JSON.stringify(announcements, null, 4), function(err){
+        if(err) {
+            console.log(err);
+        } else{
+            getAnnouncements();
+        }
+    });
+};
+
 /*
  Websocket stuff
  */
@@ -154,6 +179,7 @@ io.on('connection', function (socket) {
     //On connect, send client current info
     socket.emit('updateWeather', weather);
     socket.emit('updateContactInfo', contactInformation);
+    socket.emit('updateAnnouncements', announcements);
 
     /*
     ** Client Requests
@@ -172,6 +198,10 @@ io.on('connection', function (socket) {
     //Sets updated contact information
     socket.on('updateContacts', function(data){
         setContacts(data);
+    });
+
+    socket.on('updateAnnouncements', function(data){
+        setAnnouncements(data);
     });
 
     //A user has disconnected

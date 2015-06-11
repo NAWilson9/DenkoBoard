@@ -24,27 +24,44 @@
         <h1>Denko-Board Admin Page <small><a href="/">Denko-Board</a></small></h1>
     </header>
     <main ng-controller="adminController">
-        <section class="col-xs-12 col-lg-4">
-            <h2>Contact Information Editor</h2>
-            <ul>
+        <section class="col-xs-12 col-lg-5">
+            <h2 class="row col-xs-12">Contact Information Editor</h2>
+            <div class="row">
+                <span class="col-xs-3">Type</span>
+                <span class="col-xs-7">Value</span>
+            </div>
+            <ul class="row">
                 <li name="contact" ng-repeat="contact in contactInformation">
-                    <form>
-                        <label>{{contact.type}} </label>
-                        <input type="text"  ng-value="contact.value">
-                    </form>
+                    <input class="col-xs-3" type="text" ng-value="contact.type">
+                    <input class="col-xs-7" type="text"  ng-value="contact.value">
+                    <button class="col-xs-2" onclick="">Delete</button>
+                </li>
+                <li id="newContact">
+                    <input class="col-xs-3" type="text">
+                    <input class="col-xs-7" type="text">
+                    <button class="col-xs-1" onclick="clearAdminCells('newContact')">Clear</button>
+                    <button class="col-xs-1" onclick="">Add</button>
                 </li>
             </ul>
             <button onclick="contactsSubmit()">Submit</button>
         </section>
-        <section class="col-xs-12 col-lg-6">
-            <h2>Announcements Editor</h2>
-            <div>Add new announcement</div>
-            <input type="text">
-            <h3>Announcements</h3>
-            <ul>
+        <section class="col-xs-12 col-lg-7">
+            <h2 class="row col-xs-12">Announcements Editor</h2>
+            <div class="row">
+                <span class="col-xs-3">Type</span>
+                <span class="col-xs-7">Value</span>
+            </div>
+            <ul class="row">
                 <li name="announcements" ng-repeat="announcement in announcements">
-                    <h4>{{announcement.title}}</h4>
-                    <P>{{announcement.content}}</P>
+                    <input class="col-xs-3" type="text" ng-value="announcement.title">
+                    <input class="col-xs-7" type="text"  ng-value="announcement.value">
+                    <button class="col-xs-2" onclick="">Delete</button>
+                </li>
+                <li id="newAnnouncement">
+                    <input class="col-xs-3" type="text" ng-model="newAnnouncement.title">
+                    <input class="col-xs-7" type="text" ng-model="newAnnouncement.value">
+                    <button class="col-xs-1" onclick="clearAdminCells('newAnnouncement')">Clear</button>
+                    <button class="col-xs-1" ng-click="addAnnouncement('newAnnouncement')">Add</button>
                 </li>
             </ul>
             <button onclick="announcementsSubmit()">Submit</button>

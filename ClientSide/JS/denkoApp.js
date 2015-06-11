@@ -20,37 +20,21 @@ app.controller('weatherController' , function($scope) {
 });
 
 app.controller('adminController', function($scope){
-    /*$scope.contactInformation = [
-        { type: '4 Help Number', value: '123-456-7890'},
-        { type: 'Office Number', value: '123-456-7890'},
-        { type: 'Cell Number', value: '123-456-7890'},
-        { type: 'Email Address', value: 'Bossman@email.com'},
-        { type: 'Skype Name', value: 'Boss.man'}
-    ];*/
 
-   socket.on('updateContactInfo', function(data){
-        console.log('Updated contact info has been received');
-        if(data.contacts.length){
+    socket.on('updateContactInfo', function(data){
+        if(data && data.contacts.length){
+            console.log('Updated contact info has been received');
             $scope.contactInformation = data.contacts;
             $scope.$apply();
         } else {
-            console.log('Received weather object was blank. Trying again...');
+            console.log('Received contact object was blank. Trying again...');
             setTimeout(function(){ socket.emit('getContactInformation');}, 1000);
         }
    });
 
-    $scope.announcements = [
-        {'title': 'titletitle', 'content': 'announcementannouncementannouncementannouncement'},
-        {'title': 'titletitle', 'content': 'announcementannouncementannouncementannouncement'},
-        {'title': 'titletitle', 'content': 'announcementannouncementannouncementannouncement'},
-        {'title': 'titletitle', 'content': 'announcementannouncementannouncementannouncement'}
-    ];
-
-
-
     socket.on('updateAnnouncements', function(data){
-        console.log('Updated announcements have been received');
-        if(data.announcements.length){
+        if(data && data.announcements){
+            console.log('Updated announcements have been received');
             $scope.announcements = data.announcements;
             $scope.$apply();
         } else {
@@ -58,6 +42,24 @@ app.controller('adminController', function($scope){
             setTimeout(function(){ socket.emit('getAnnouncements');}, 1000);
         }
     });
+
+    $scope.addAnnouncement = function(name){
+        if(!$scope.newAnnouncement.title || ! $scope.newAnnouncement.value){
+            alert('You cannot add an announcement with a blank field.');
+        } else {
+            var newAnnouncement = {
+                'title': $scope.newAnnouncement.title,
+                'value': $scope.newAnnouncement.value
+            };
+            $scope.announcements.push(newAnnouncement);
+            $scope.newAnnouncement.title = '';
+            $scope.newAnnouncement.value = '';
+        }
+    };
+
+    $scope.deleteCells = function(name){
+
+    }
 });
 
 //Controller for all music aspects

@@ -1,23 +1,23 @@
 {
     "contacts": [
         {
-            "type": "4 Help Number     ",
+            "type": "4 Help Number",
             "value": "123-456-7890"
         },
         {
-            "type": "Office Number     ",
+            "type": "Office Number",
             "value": "123-456-7890"
         },
         {
-            "type": "Cell Number     ",
+            "type": "Cell Number",
             "value": "HYPE"
         },
         {
-            "type": "Email Address     ",
+            "type": "Email Address",
             "value": "Bossman@email.com"
         },
         {
-            "type": "Skype Name     ",
+            "type": "Skype Name",
             "value": "Boss.man"
         }
     ]
