@@ -3,7 +3,7 @@
  */
 
 //App definition
-var app = angular.module('DenkoApp', []);
+var app = angular.module('denkoAdminApp', []);
 
 //Controller for all weather aspects
 app.controller('weatherController' , function($scope) {
@@ -30,7 +30,7 @@ app.controller('adminController', function($scope){
             console.log('Received contact object was blank. Trying again...');
             setTimeout(function(){ socket.emit('getContactInformation');}, 1000);
         }
-   });
+    });
 
     socket.on('updateAnnouncements', function(data){
         if(data && data.announcements){
@@ -43,7 +43,7 @@ app.controller('adminController', function($scope){
         }
     });
 
-    $scope.addAnnouncement = function(name){
+    $scope.addAnnouncement = function(){
         if(!$scope.newAnnouncement.title || ! $scope.newAnnouncement.value){
             alert('You cannot add an announcement with a blank field.');
         } else {

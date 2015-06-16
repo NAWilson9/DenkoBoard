@@ -1,24 +1,22 @@
-{
-    "contacts": [
-        {
-            "type": "4 Help Number",
-            "value": "123-456-7890"
-        },
-        {
-            "type": "Office Number",
-            "value": "123-456-7890"
-        },
-        {
-            "type": "Cell Number",
-            "value": "HYPE"
-        },
-        {
-            "type": "Email Address",
-            "value": "Bossman@email.com"
-        },
-        {
-            "type": "Skype Name",
-            "value": "Boss.man"
-        }
-    ]
-}
+ [
+    {
+        "title": "4 Help Number",
+        "value": "123-456-7890"
+    },
+    {
+        "title": "Office Number",
+        "value": "123-456-7890"
+    },
+    {
+        "title": "Cell Number",
+        "value": "HYPE"
+    },
+    {
+        "title": "Email Address",
+        "value": "Bossman@email.com"
+    },
+    {
+        "title": "Skype Name",
+        "value": "Boss.man"
+    }
+]

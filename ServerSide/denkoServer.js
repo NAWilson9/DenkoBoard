@@ -156,7 +156,7 @@ var getAnnouncements = function(){
 
 //Writes new contact info to file and calls getContacts()
 var setAnnouncements = function(announcements){
-    fs.writeFile('announcements.json', JSON.stringify(announcements, null, 4), function(err){
+    fs.writeFile('announcements.json', JSON.stringify(announcements, 4), function(err){
         if(err) {
             console.log(err);
         } else{
@@ -179,7 +179,7 @@ io.on('connection', function (socket) {
     //On connect, send client current info
     socket.emit('updateWeather', weather);
     socket.emit('updateContactInfo', contactInformation);
-    socket.emit('updateAnnouncements', announcements);
+    socket.emit('getAnnouncements', announcements);
 
     /*
     ** Client Requests
@@ -200,7 +200,7 @@ io.on('connection', function (socket) {
         setContacts(data);
     });
 
-    socket.on('updateAnnouncements', function(data){
+    socket.on('storeAnnouncements', function(data){
         setAnnouncements(data);
     });
 
