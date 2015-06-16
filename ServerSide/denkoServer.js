@@ -24,7 +24,7 @@ var weather = {
     alerts: []
 };
 
-var contactInformation;
+var contacts;
 var announcements;
 
 app.use(express.static('../ClientSide/', {
@@ -119,21 +119,21 @@ var getWeather = function(){
     setTimeout(getWeather, 180000);
 };
 
-//Updates contactInformation with values in file and sends to all clients
+//Updates contacts with values in file and sends to all clients
 var getContacts = function(){
-    fs.readFile('contactInformation.json', function(err, data){
+    fs.readFile('contacts.json', function(err, data){
         if(err){
             console.log(err);
         } else{
-            contactInformation = JSON.parse(data);
-            io.emit('updateContactInfo', contactInformation);
+            contacts = JSON.parse(data);
+            io.emit('getContacts', contacts);
         }
     });
 };
 
 //Writes new contact info to file and calls getContacts()
 var setContacts = function(contacts){
-    fs.writeFile('contactInformation.json', JSON.stringify(contacts, null, 4), function(err){
+    fs.writeFile('contacts.json', JSON.stringify(contacts, null, 4), function(err){
         if(err) {
              console.log(err);
         } else{
@@ -142,21 +142,21 @@ var setContacts = function(contacts){
     });
 };
 
-//Updates contactInformation with values in file and sends to all clients
+//Updates contacts with values in file and sends to all clients
 var getAnnouncements = function(){
     fs.readFile('announcements.json', function(err, data){
         if(err){
             console.log(err);
         } else{
             announcements = JSON.parse(data);
-            io.emit('updateAnnouncements', announcements);
+            io.emit('getAnnouncements', announcements);
         }
     });
 };
 
 //Writes new contact info to file and calls getContacts()
 var setAnnouncements = function(announcements){
-    fs.writeFile('announcements.json', JSON.stringify(announcements, 4), function(err){
+    fs.writeFile('announcements.json', JSON.stringify(announcements, null, 4), function(err){
         if(err) {
             console.log(err);
         } else{
@@ -178,8 +178,9 @@ io.on('connection', function (socket) {
     console.log('A user has connected. Total users: ' + users);
     //On connect, send client current info
     socket.emit('updateWeather', weather);
-    socket.emit('updateContactInfo', contactInformation);
+    socket.emit('updateContactInfo', contacts);
     socket.emit('getAnnouncements', announcements);
+    socket.emit('getContacts', contacts);
 
     /*
     ** Client Requests
@@ -191,12 +192,12 @@ io.on('connection', function (socket) {
     });
 
     //Request for current contact information
-    socket.on('getContactInformation', function(){
-       socket.emit('updateContactInfo', contactInformation);
+    socket.on('getcontacts', function(){
+       socket.emit('updateContactInfo', contacts);
     });
 
     //Sets updated contact information
-    socket.on('updateContacts', function(data){
+    socket.on('storeContacts', function(data){
         setContacts(data);
     });
 

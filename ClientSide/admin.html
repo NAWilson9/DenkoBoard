@@ -31,19 +31,19 @@
                 <span class="col-xs-7">Value</span>
             </div>
             <ul class="row">
-                <li name="contact" ng-repeat="contact in contacts">
+                <li ng-repeat="contact in contacts track by $index">
                     <input class="col-xs-3" type="text" ng-value="contact.title">
                     <input class="col-xs-7" type="text"  ng-value="contact.value">
                     <button class="col-xs-2" ng-click="deleteContact($index)">Delete</button>
                 </li>
-                <li id="newContact">
+                <li>
                     <input class="col-xs-3" type="text" ng-model="newContact.title">
                     <input class="col-xs-7" type="text" ng-model="newContact.value">
-                    <button class="col-xs-1" ng-click="clearNewAnnouncement()">Clear</button>
-                    <button class="col-xs-1" ng-click="addNewContact">Add</button>
+                    <button class="col-xs-1" ng-click="clearNewContact()">Clear</button>
+                    <button class="col-xs-1" ng-click="addNewContact()">Add</button>
                 </li>
             </ul>
-            <button onclick="contactsSubmit()">Submit</button>
+            <button ng-click="submit()">Submit</button>
         </section>
         <section class="col-xs-12 col-lg-7" ng-controller="announcementEditor">
             <h2 class="row col-xs-12">Announcements Editor</h2>
@@ -52,12 +52,12 @@
                 <span class="col-xs-7">Value</span>
             </div>
             <ul class="row">
-                <li name="announcements" ng-repeat="announcement in announcements">
+                <li ng-repeat="announcement in announcements track by $index">
                     <input class="col-xs-3" type="text" ng-value="announcement.title">
                     <input class="col-xs-7" type="text"  ng-value="announcement.value">
                     <button class="col-xs-2" ng-click="deleteAnnouncement($index)">Delete</button>
                 </li>
-                <li id="newAnnouncement">
+                <li>
                     <input class="col-xs-3" type="text" ng-model="newAnnouncement.title">
                     <input class="col-xs-7" type="text" ng-model="newAnnouncement.value">
                     <button class="col-xs-1" ng-click="clearNewAnnouncement()">Clear</button>

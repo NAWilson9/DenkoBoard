@@ -3,7 +3,7 @@
  */
 
 //App definition
-var app = angular.module('denkoAdminApp', []);
+var app = angular.module('denkoApp', []);
 
 //Controller for all weather aspects
 app.controller('weatherController' , function($scope) {
@@ -19,47 +19,41 @@ app.controller('weatherController' , function($scope) {
     });
 });
 
-app.controller('adminController', function($scope){
+//Controller for all information aspects
+app.controller('infoController', function($scope, $timeout){
+    $scope.contacts = {};
+    $scope.announcements = {};
+    $scope.clock = "Loading clock...";
 
-    socket.on('updateContactInfo', function(data){
-        if(data && data.contacts.length){
-            console.log('Updated contact info has been received');
-            $scope.contactInformation = data.contacts;
+    //Updates the clock every second
+    $scope.tick = function () {
+        $scope.clock = Date.now(); // get the current time
+        $timeout($scope.tick, 1000); // reset the timer
+    };
+
+    //Receives updated contacts
+    socket.on('getContacts', function(data){
+        if(data && data.length){
+            console.log('Updated contacts have been received');
+            $scope.contacts = data;
             $scope.$apply();
         } else {
             console.log('Received contact object was blank. Trying again...');
-            setTimeout(function(){ socket.emit('getContactInformation');}, 1000);
+            setTimeout(function(){ socket.emit('getContacts');}, 1000);
         }
     });
 
-    socket.on('updateAnnouncements', function(data){
-        if(data && data.announcements){
+    //Receives updated announcements
+    socket.on('getAnnouncements', function(data){
+        if(data && data.length){
             console.log('Updated announcements have been received');
-            $scope.announcements = data.announcements;
+            $scope.announcements = data;
             $scope.$apply();
         } else {
             console.log('Received announcement object was blank. Trying again...');
             setTimeout(function(){ socket.emit('getAnnouncements');}, 1000);
         }
     });
-
-    $scope.addAnnouncement = function(){
-        if(!$scope.newAnnouncement.title || ! $scope.newAnnouncement.value){
-            alert('You cannot add an announcement with a blank field.');
-        } else {
-            var newAnnouncement = {
-                'title': $scope.newAnnouncement.title,
-                'value': $scope.newAnnouncement.value
-            };
-            $scope.announcements.push(newAnnouncement);
-            $scope.newAnnouncement.title = '';
-            $scope.newAnnouncement.value = '';
-        }
-    };
-
-    $scope.deleteCells = function(name){
-
-    }
 });
 
 //Controller for all music aspects
@@ -77,23 +71,4 @@ app.controller('musicController', function($scope){
         { title: 'Atlantis', artist: 'Enei', albumArt: ''}
     ];
 });
-
-//Controller for all information aspects
-app.controller('infoController', function($scope){
-    $scope.announcements = [
-        { title: 'Time', comment: 'Get your time in by Friday'},
-        { title: 'OOO', comment: "I'll be OOO Wednesday - Friday. Skype me if you have any problems"},
-        { title: 'Pizza', comment: 'Pizza today!'}
-    ];
-    $scope.contactInformation = [
-        { type: '4 Help Number', value: '123-456-7890'},
-        { type: 'Office Number', value: '123-456-7890'},
-        { type: 'Cell Number', value: '123-456-7890'},
-        { type: 'Email Address', value: 'Bossman@email.com'},
-        { type: 'Skype Name', value: 'Boss.man'}
-    ];
-});
-
-
-
 

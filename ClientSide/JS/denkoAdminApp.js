@@ -53,7 +53,7 @@ app.controller('announcementEditor', function($scope){
 
 app.controller('contactEditor', function($scope){
     $scope.contacts = {};
-    $scope.newContacts = {};
+    $scope.newContact = {};
 
     //Clears the values of the new contact cells
     $scope.clearNewContact = function(){

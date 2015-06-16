@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="DenkoApp">
+<html ng-app="denkoApp">
 <head lang="en">
     <!-- Metadata stuff -->
     <meta charset="UTF-8">
@@ -21,16 +21,16 @@
 </head>
 <body class="container-fluid" onload="initialize()">
     <section id="info" class="col-xs-12 col-md-6 col-lg-4 col-lg-push-4" ng-controller="infoController">
-        <section id="title">
+        <section id="title" ng-init="tick()">
             <h1 onclick="hype()">Denko-Board</h1>
             <span>Maverick Image</span>
-            <span onclick="test()">Time <span id="time"></span></span>
+            <span onclick="test()">{{ clock  | date:'short'}}</span>
         </section>
         <section id="announcements">
             <ul>
                 <li ng-repeat="announcement in announcements">
                     <h2>{{announcement.title}}</h2>
-                    <p>{{announcement.comment}}</p>
+                    <p>{{announcement.value}}</p>
                 </li>
 
             </ul>
@@ -38,8 +38,8 @@
         <section id="contactInformation">
             <h2>Contact Information</h2>
             <ul>
-                <li ng-repeat="contact in contactInformation">
-                    <span>{{contact.type}}</span>
+                <li ng-repeat="contact in contacts">
+                    <span>{{contact.title}}</span>
                     <span>{{contact.value}}</span>
                 </li>
             </ul>
