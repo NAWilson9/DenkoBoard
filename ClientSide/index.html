@@ -27,9 +27,10 @@
             <span onclick="test()">{{ clock  | date:'short'}}</span>
         </section>
         <section id="announcements">
+            <h2>Announcements</h2>
             <ul>
                 <li ng-repeat="announcement in announcements">
-                    <h2>{{announcement.title}}</h2>
+                    <h3>{{announcement.title}}</h3>
                     <p>{{announcement.value}}</p>
                 </li>
 

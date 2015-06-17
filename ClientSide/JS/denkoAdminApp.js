@@ -4,53 +4,6 @@
 
 var app = angular.module('denkoAdminApp', []);
 
-app.controller('announcementEditor', function($scope){
-    $scope.announcements = {};
-    $scope.newAnnouncement = {};
-
-    //Clears the values of the new announcement cells
-    $scope.clearNewAnnouncement = function(){
-        $scope.newAnnouncement.title = '';
-        $scope.newAnnouncement.value = '';
-    };
-
-    //Function that is called when the add button is hit
-    $scope.addNewAnnouncement = function(){
-        if(!$scope.newAnnouncement.title || ! $scope.newAnnouncement.value){
-            alert('You cannot add an announcement with a blank field.');
-        } else {
-            var newAnnouncement = {
-                'title': $scope.newAnnouncement.title,
-                'value': $scope.newAnnouncement.value
-            };
-            $scope.announcements.push(newAnnouncement);
-            $scope.clearNewAnnouncement();
-        }
-    };
-
-    //Deletes an announcement
-    $scope.deleteAnnouncement = function(index){
-        $scope.announcements.splice(index, 1);
-    };
-
-    //Function that is called when the submit button is hit
-    $scope.submit = function(){
-      socket.emit('storeAnnouncements', $scope.announcements);
-    };
-
-    //Receives updated announcements
-    socket.on('getAnnouncements', function(data){
-        if(data && data.length){
-            console.log('Updated announcements have been received');
-            $scope.announcements = data;
-            $scope.$apply();
-        } else {
-            console.log('Received announcement object was blank. Trying again...');
-            setTimeout(function(){ socket.emit('getAnnouncements');}, 1000);
-        }
-    });
-});
-
 app.controller('contactEditor', function($scope){
     $scope.contacts = {};
     $scope.newContact = {};
@@ -98,3 +51,67 @@ app.controller('contactEditor', function($scope){
     });
 });
 
+app.controller('announcementEditor', function($scope){
+    $scope.announcements = {};
+    $scope.newAnnouncement = {};
+
+    //Clears the values of the new announcement cells
+    $scope.clearNewAnnouncement = function(){
+        $scope.newAnnouncement.title = '';
+        $scope.newAnnouncement.value = '';
+    };
+
+    //Function that is called when the add button is hit
+    $scope.addNewAnnouncement = function(){
+        if(!$scope.newAnnouncement.title || ! $scope.newAnnouncement.value){
+            alert('You cannot add an announcement with a blank field.');
+        } else {
+            var newAnnouncement = {
+                'title': $scope.newAnnouncement.title,
+                'value': $scope.newAnnouncement.value
+            };
+            $scope.announcements.push(newAnnouncement);
+            $scope.clearNewAnnouncement();
+        }
+    };
+
+    //Deletes an announcement
+    $scope.deleteAnnouncement = function(index){
+        $scope.announcements.splice(index, 1);
+    };
+
+    //Function that is called when the submit button is hit
+    $scope.submit = function(){
+        console.log($scope.announcements);
+        socket.emit('storeAnnouncements', $scope.announcements);
+    };
+
+    //Receives updated announcements
+    socket.on('getAnnouncements', function(data){
+        if(data && data.length){
+            console.log('Updated announcements have been received');
+            $scope.announcements = data;
+            $scope.$apply();
+        } else {
+            console.log('Received announcement object was blank. Trying again...');
+            setTimeout(function(){ socket.emit('getAnnouncements');}, 1000);
+        }
+    });
+
+
+    $scope.temp = '';
+    $scope.test = '';
+    $scope.submitPassword = function(){
+        socket.emit('submitPassword', $scope.test);
+        console.log('submitted');
+    };
+
+    socket.on('confirmation', function(data){
+        console.log('test: ' + data);
+        $scope.temp = data;
+
+    })
+
+
+
+});

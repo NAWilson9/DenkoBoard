@@ -205,6 +205,14 @@ io.on('connection', function (socket) {
         setAnnouncements(data);
     });
 
+    socket.on('submitPassword', function(data){
+       var temp = 'GG';
+        if(data == 'noob'){
+            temp = 'REKerino';
+        }
+        socket.emit('confirmation', temp)
+    });
+
     //A user has disconnected
     socket.on('disconnect', function () {
         users--;

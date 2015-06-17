@@ -71,4 +71,3 @@ app.controller('musicController', function($scope){
         { title: 'Atlantis', artist: 'Enei', albumArt: ''}
     ];
 });
-
