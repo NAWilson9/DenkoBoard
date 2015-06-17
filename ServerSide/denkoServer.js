@@ -24,9 +24,13 @@ var weather = {
     alerts: []
 };
 
+//Info Setup
 var contacts;
 var announcements;
 
+app.use(express.static('../node_modules/angular'));
+app.use(express.static('../node_modules/bootstrap/dist/css'));
+app.use(express.static('../node_modules/normalize-css'));
 app.use(express.static('../ClientSide/', {
     extensions: ['html']
 }));

@@ -27,8 +27,8 @@ app.controller('infoController', function($scope, $timeout){
 
     //Updates the clock every second
     $scope.tick = function () {
-        $scope.clock = Date.now(); // get the current time
-        $timeout($scope.tick, 1000); // reset the timer
+        $scope.clock = Date.now();
+        $timeout($scope.tick, 1000);
     };
 
     //Receives updated contacts
