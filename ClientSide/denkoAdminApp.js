@@ -4,97 +4,68 @@
 
 var app = angular.module('denkoAdminApp', []);
 
-app.controller('contactEditor', function($scope){
-    $scope.contacts = {};
-    $scope.newContact = {};
+app.controller('dataEditor', function($scope){
+    var dataType = {};
+    $scope.title = '';
+    $scope.data = {};
+    $scope.newData = {};
 
-    //Clears the values of the new contact cells
-    $scope.clearNewContact = function(){
-        $scope.newContact.title = '';
-        $scope.newContact.value = '';
+    //Sets up the controller for the type of data it's handling and registers the listener socket
+    $scope.init = function(type){
+      if(type == 'announcements'){
+          dataType.data = 'announcement';
+          dataType.get = 'getAnnouncements';
+          dataType.receive = 'receiveAnnouncements';
+          dataType.store = 'storeAnnouncements';
+          $scope.title = 'Announcement';
+      }  else if (type == 'contacts'){
+          dataType.data = 'contact';
+          dataType.get = 'getContacts';
+          dataType.receive = 'receiveContacts';
+          dataType.store = 'storeContacts';
+          $scope.title = 'Contact';
+      }
+        //Receives updated data
+        socket.on(dataType.receive, function(data){
+            console.log('hype');
+            if(data && data.length){
+                console.log('Updated ' + dataType.data + 's have been received');
+                $scope.data = data;
+                $scope.$apply();
+            } else {
+                console.log('Received ' + dataType.data + ' object was blank. Trying again...');
+                setTimeout(function(){ socket.emit(dataType.get);}, 1000);
+            }
+        });
+    };
+
+    //Deletes a data item
+    $scope.deleteData = function(index){
+        $scope.data.splice(index, 1);
+    };
+
+    //Called when the submit button is hit
+    $scope.submit = function(){
+        socket.emit(dataType.store, $scope.data);
+    };
+
+    //Clears the values of the new data cells
+    $scope.clearNewData = function(){
+        $scope.newData.title = '';
+        $scope.newData.value = '';
     };
 
     //Function that is called when the add button is hit
-    $scope.addNewContact = function(){
-        if(!$scope.newContact.title || ! $scope.newContact.value){
-            alert('You cannot add a contact with a blank field.');
+    $scope.addNewData = function(){
+        if(!$scope.newData.title || ! $scope.newData.value){
+            alert('You cannot add an ' + dataType.data + ' with a blank field.');
         } else {
-            var newContact = {
-                'title': $scope.newContact.title,
-                'value': $scope.newContact.value
+            var newData = {
+                'title': $scope.newData.title,
+                'value': $scope.newData.value
             };
-            $scope.contacts.push(newContact);
-            $scope.clearNewContact();
+            $scope.data.push(newData);
+            $scope.clearNewData();
         }
     };
-
-    //Deletes an contact
-    $scope.deleteContact = function(index){
-        $scope.contacts.splice(index, 1);
-    };
-
-    //Function that is called when the submit button is hit
-    $scope.submit = function(){
-        socket.emit('storeContacts', $scope.contacts);
-    };
-
-    //Receives updated contacts
-    socket.on('receiveContacts', function(data){
-        if(data && data.length){
-            console.log('Updated contacts have been received');
-            $scope.contacts = data;
-            $scope.$apply();
-        } else {
-            console.log('Received contact object was blank. Trying again...');
-            setTimeout(function(){ socket.emit('getContacts');}, 1000);
-        }
-    });
-});
-
-app.controller('announcementEditor', function($scope){
-    $scope.announcements = {};
-    $scope.newAnnouncement = {};
-
-    //Clears the values of the new announcement cells
-    $scope.clearNewAnnouncement = function(){
-        $scope.newAnnouncement.title = '';
-        $scope.newAnnouncement.value = '';
-    };
-
-    //Function that is called when the add button is hit
-    $scope.addNewAnnouncement = function(){
-        if(!$scope.newAnnouncement.title || ! $scope.newAnnouncement.value){
-            alert('You cannot add an announcement with a blank field.');
-        } else {
-            var newAnnouncement = {
-                'title': $scope.newAnnouncement.title,
-                'value': $scope.newAnnouncement.value
-            };
-            $scope.announcements.push(newAnnouncement);
-            $scope.clearNewAnnouncement();
-        }
-    };
-
-    //Deletes an announcement
-    $scope.deleteAnnouncement = function(index){
-        $scope.announcements.splice(index, 1);
-    };
-
-    //Function that is called when the submit button is hit
-    $scope.submit = function(){
-        console.log($scope.announcements);
-        socket.emit('storeAnnouncements', $scope.announcements);
-    };
-
-    //Receives updated announcements
-    socket.on('receiveAnnouncements', function(data){
-        if(data && data.length){
-            console.log('Updated announcements have been received');
-            $scope.announcements = data;
-            $scope.$apply();
-        } else {
-            console.log('Received announcement object was blank. Trying again...');
-            setTimeout(function(){ socket.emit('getAnnouncements');}, 1000);
-        }
-    });
 });
