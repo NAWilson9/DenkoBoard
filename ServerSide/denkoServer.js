@@ -3,13 +3,13 @@
  */
 //Link dependencies
 var express = require('express');
+var io = require('socket.io');
 var Forecast = require('forecast.io');
 var fs = require('fs');
 
 //Setup server
 var app = express();
 var port = 1337;
-var users = 0;
 
 //Weather setup
 var forecastAPIKey = '285d7483f9acc0b5ddf7066e1e238e29';
@@ -37,6 +37,7 @@ app.use(express.static('../ClientSide/', {
 
 //Start web server
 var server = app.listen(port, function () {
+
     //Initialize
     getWeather();
     getContacts();
@@ -116,7 +117,7 @@ var getWeather = function(){
         }
     });
     //Pushes new weather info to all clients
-    io.emit('updateWeather', weather);
+    io.emit('receiveWeather', weather);
     //Weather was retrieved, parsed, and pushed successfully
     console.log('Updated weather conditions received, parsed, and pushed');
     //Schedules weather refresh every 3 minutes
@@ -130,7 +131,7 @@ var getContacts = function(){
             console.log(err);
         } else{
             contacts = JSON.parse(data);
-            io.emit('getContacts', contacts);
+            io.emit('receiveContacts', contacts);
         }
     });
 };
@@ -153,7 +154,7 @@ var getAnnouncements = function(){
             console.log(err);
         } else{
             announcements = JSON.parse(data);
-            io.emit('getAnnouncements', announcements);
+            io.emit('receiveAnnouncements', announcements);
         }
     });
 };
@@ -174,17 +175,16 @@ var setAnnouncements = function(announcements){
  */
 
 //Start websocket server
-var io = require('socket.io').listen(server);
+io = io.listen(server);
 
 //Socket routes
 io.on('connection', function (socket) {
-    users++;
-    console.log('A user has connected. Total users: ' + users);
+    console.log('A user has connected. Total users: ' + io.sockets.sockets.length);
     //On connect, send client current info
-    socket.emit('updateWeather', weather);
-    socket.emit('updateContactInfo', contacts);
-    socket.emit('getAnnouncements', announcements);
-    socket.emit('getContacts', contacts);
+    socket.emit('receiveWeather', weather);
+    socket.emit('receiveAnnouncements', announcements);
+    socket.emit('receiveContacts', contacts);
+    //console.log(io.sockets.sockets);
 
     /*
     ** Client Requests
@@ -192,12 +192,17 @@ io.on('connection', function (socket) {
 
     //Request for current weather condiitons
     socket.on('getWeather', function(){
-        socket.emit('updateWeather', weather)
+        socket.emit('receiveWeather', weather)
     });
 
     //Request for current contact information
-    socket.on('getcontacts', function(){
-       socket.emit('updateContactInfo', contacts);
+    socket.on('getContacts', function(){
+       socket.emit('receiveContacts', contacts);
+    });
+
+    //Request for current announcements
+    socket.on('getAnnouncements', function(){
+        socket.emit('receiveAnnouncements', announcements);
     });
 
     //Sets updated contact information
@@ -209,17 +214,13 @@ io.on('connection', function (socket) {
         setAnnouncements(data);
     });
 
-    socket.on('submitPassword', function(data){
-       var temp = 'GG';
-        if(data == 'noob'){
-            temp = 'REKerino';
-        }
-        socket.emit('confirmation', temp)
+    socket.on('test', function(hype){
+       console.log('test hit');
+        hype();
     });
 
     //A user has disconnected
     socket.on('disconnect', function () {
-        users--;
-        console.log('A user has disconnected. Total users: ' + users);
+        console.log('A user has disconnected. Total users: ' + io.sockets.sockets.length);
     });
 });

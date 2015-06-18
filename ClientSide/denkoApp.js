@@ -7,7 +7,7 @@ var app = angular.module('denkoApp', []);
 
 //Controller for all weather aspects
 app.controller('weatherController' , function($scope) {
-    socket.on('updateWeather', function (data) {
+    socket.on('receiveWeather', function (data) {
         console.log('Updated weather information has been received');
         if(data.currently){
             $scope.weather = data;
@@ -31,8 +31,16 @@ app.controller('infoController', function($scope, $timeout){
         $timeout($scope.tick, 1000);
     };
 
+    $scope.test = function(){
+        var hype = function(){
+            console.log('hype');
+        };
+        socket.emit('test', hype);
+
+    };
+
     //Receives updated contacts
-    socket.on('getContacts', function(data){
+    socket.on('receiveContacts', function(data){
         if(data && data.length){
             console.log('Updated contacts have been received');
             $scope.contacts = data;
@@ -44,7 +52,7 @@ app.controller('infoController', function($scope, $timeout){
     });
 
     //Receives updated announcements
-    socket.on('getAnnouncements', function(data){
+    socket.on('receiveAnnouncements', function(data){
         if(data && data.length){
             console.log('Updated announcements have been received');
             $scope.announcements = data;

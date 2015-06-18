@@ -39,7 +39,7 @@ app.controller('contactEditor', function($scope){
     };
 
     //Receives updated contacts
-    socket.on('getContacts', function(data){
+    socket.on('receiveContacts', function(data){
         if(data && data.length){
             console.log('Updated contacts have been received');
             $scope.contacts = data;
@@ -87,7 +87,7 @@ app.controller('announcementEditor', function($scope){
     };
 
     //Receives updated announcements
-    socket.on('getAnnouncements', function(data){
+    socket.on('receiveAnnouncements', function(data){
         if(data && data.length){
             console.log('Updated announcements have been received');
             $scope.announcements = data;
@@ -97,21 +97,4 @@ app.controller('announcementEditor', function($scope){
             setTimeout(function(){ socket.emit('getAnnouncements');}, 1000);
         }
     });
-
-
-    $scope.temp = '';
-    $scope.test = '';
-    $scope.submitPassword = function(){
-        socket.emit('submitPassword', $scope.test);
-        console.log('submitted');
-    };
-
-    socket.on('confirmation', function(data){
-        console.log('test: ' + data);
-        $scope.temp = data;
-
-    })
-
-
-
 });
