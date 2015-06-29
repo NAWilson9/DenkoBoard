@@ -13,8 +13,8 @@ app.controller('weatherController' , function($scope) {
             $scope.weather = data;
             $scope.$apply();
         } else {
-            console.log('Received weather object was blank. Trying again...');
             setTimeout(function(){ socket.emit('getWeather');}, 1000);
+            console.log('Error receiving weather object. Trying again...');
         }
     });
 });
@@ -31,13 +31,6 @@ app.controller('infoController', function($scope, $timeout){
         $timeout($scope.tick, 1000);
     };
 
-    $scope.test = function(){
-        var hype = function(){
-            console.log('hype');
-        };
-        socket.emit('test', hype);
-
-    };
 
     //Receives updated contacts
     socket.on('receiveContacts', function(data){
@@ -46,8 +39,8 @@ app.controller('infoController', function($scope, $timeout){
             $scope.contacts = data;
             $scope.$apply();
         } else {
-            console.log('Received contact object was blank. Trying again...');
             setTimeout(function(){ socket.emit('getContacts');}, 1000);
+            console.log('Error receiving contact object. Trying again...');
         }
     });
 
@@ -58,8 +51,8 @@ app.controller('infoController', function($scope, $timeout){
             $scope.announcements = data;
             $scope.$apply();
         } else {
-            console.log('Received announcement object was blank. Trying again...');
             setTimeout(function(){ socket.emit('getAnnouncements');}, 1000);
+            console.log('Error receiving announcement object. Trying again...');
         }
     });
 });

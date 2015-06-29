@@ -37,7 +37,6 @@ app.use(express.static('../ClientSide/', {
 
 //Start web server
 var server = app.listen(port, function () {
-
     //Initialize
     getWeather();
     getContacts();
@@ -179,12 +178,12 @@ io = io.listen(server);
 
 //Socket routes
 io.on('connection', function (socket) {
-    console.log('A user has connected. Total users: ' + io.sockets.sockets.length);
+    console.log('A user has connected. Total users: ' + io.engine.clientsCount);
+
     //On connect, send client current info
     socket.emit('receiveWeather', weather);
     socket.emit('receiveAnnouncements', announcements);
     socket.emit('receiveContacts', contacts);
-    //console.log(io.sockets.sockets);
 
     /*
     ** Client Requests
@@ -210,17 +209,13 @@ io.on('connection', function (socket) {
         setContacts(data);
     });
 
+    //Sets updated announcement information
     socket.on('storeAnnouncements', function(data){
         setAnnouncements(data);
     });
 
-    socket.on('test', function(hype){
-       console.log('test hit');
-        hype();
-    });
-
     //A user has disconnected
     socket.on('disconnect', function () {
-        console.log('A user has disconnected. Total users: ' + io.sockets.sockets.length);
+        console.log('A user has disconnected. Total users: ' + io.engine.clientsCount);
     });
 });
