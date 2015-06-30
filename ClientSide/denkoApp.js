@@ -12,9 +12,6 @@ app.controller('weatherController' , function($scope) {
         if(data.currently){
             $scope.weather = data;
             $scope.$apply();
-        } else {
-            setTimeout(function(){ socket.emit('getWeather');}, 1000);
-            console.log('Error receiving weather object. Trying again...');
         }
     });
 });
@@ -38,9 +35,6 @@ app.controller('infoController', function($scope, $timeout){
             console.log('Updated contacts have been received');
             $scope.contacts = data;
             $scope.$apply();
-        } else {
-            setTimeout(function(){ socket.emit('getContacts');}, 1000);
-            console.log('Error receiving contact object. Trying again...');
         }
     });
 
@@ -50,9 +44,6 @@ app.controller('infoController', function($scope, $timeout){
             console.log('Updated announcements have been received');
             $scope.announcements = data;
             $scope.$apply();
-        } else {
-            setTimeout(function(){ socket.emit('getAnnouncements');}, 1000);
-            console.log('Error receiving announcement object. Trying again...');
         }
     });
 });

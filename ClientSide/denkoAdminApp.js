@@ -32,9 +32,6 @@ app.controller('dataEditor', function($scope){
                 console.log('Updated ' + dataType.data + 's have been received');
                 $scope.data = data;
                 $scope.$apply();
-            } else {
-                console.log('Received ' + dataType.data + ' object was blank. Trying again...');
-                setTimeout(function(){ socket.emit(dataType.get);}, 1000);
             }
         });
     };

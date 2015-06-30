@@ -109,15 +109,15 @@ var getWeather = function(startupCallback){
                 weather.alerts.push(alertObj);
             }
         }
+        //Pushes new weather info to all clients
+        io.emit('receiveWeather', weather);
+        //Weather was retrieved, parsed, and pushed successfully
+        console.log('Updated weather conditions received, parsed, and pushed');
+        //Handles callback if function is being called on server startup
+        if(startupCallback){ startupCallback() }
     });
-    //Pushes new weather info to all clients
-    io.emit('receiveWeather', weather);
-    //Weather was retrieved, parsed, and pushed successfully
-    console.log('Updated weather conditions received, parsed, and pushed');
     //Schedules weather refresh every 3 minutes
     setTimeout(getWeather, 180000);
-    //Handles callback if function is being called on server startup
-    if(startupCallback){ startupCallback() }
 };
 
 //Updates contacts with values in file and sends to all clients
