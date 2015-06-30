@@ -14,13 +14,11 @@ app.controller('dataEditor', function($scope){
     $scope.init = function(type){
       if(type == 'announcements'){
           dataType.data = 'announcement';
-          dataType.get = 'getAnnouncements';
           dataType.receive = 'receiveAnnouncements';
           dataType.store = 'storeAnnouncements';
           $scope.title = 'Announcement';
       }  else if (type == 'contacts'){
           dataType.data = 'contact';
-          dataType.get = 'getContacts';
           dataType.receive = 'receiveContacts';
           dataType.store = 'storeContacts';
           $scope.title = 'Contact';
@@ -29,9 +27,11 @@ app.controller('dataEditor', function($scope){
         socket.on(dataType.receive, function(data){
             console.log('hype');
             if(data && data.length){
-                console.log('Updated ' + dataType.data + 's have been received');
                 $scope.data = data;
                 $scope.$apply();
+                console.log('Updated ' + dataType.data + 's have been received');
+            } else {
+                console.log('Updated ' + dataType.data + 'object is empty');
             }
         });
     };

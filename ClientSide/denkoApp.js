@@ -8,10 +8,12 @@ var app = angular.module('denkoApp', []);
 //Controller for all weather aspects
 app.controller('weatherController' , function($scope) {
     socket.on('receiveWeather', function (data) {
-        console.log('Updated weather information has been received');
         if(data.currently){
             $scope.weather = data;
             $scope.$apply();
+            console.log('Updated weather information has been received');
+        } else {
+            console.log('Updated weather information is empty');
         }
     });
 });
@@ -32,18 +34,22 @@ app.controller('infoController', function($scope, $timeout){
     //Receives updated contacts
     socket.on('receiveContacts', function(data){
         if(data && data.length){
-            console.log('Updated contacts have been received');
             $scope.contacts = data;
             $scope.$apply();
+            console.log('Updated contacts have been received');
+        } else {
+            console.log('Updated contacts object is empty');
         }
     });
 
     //Receives updated announcements
     socket.on('receiveAnnouncements', function(data){
         if(data && data.length){
-            console.log('Updated announcements have been received');
             $scope.announcements = data;
             $scope.$apply();
+            console.log('Updated announcements have been received');
+        } else {
+            console.log('Updated announcements object is empty');
         }
     });
 });

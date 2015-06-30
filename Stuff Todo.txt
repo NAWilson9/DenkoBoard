@@ -1,11 +1,10 @@
-- socket location conventions
 - Angular refactor
 - HTML refactor
 - Server refactor (make file parsing 'api')
 - Express tweaks
-- Socket.io tweaks
 - Error handling
 - Styling
 - Speed Optimization
 - Unit tests
 - Grunt
+- JSDoc (or equivalent)
