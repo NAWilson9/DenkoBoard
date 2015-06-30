@@ -52,7 +52,7 @@ var getWeather = function(startupCallback){
 
     //Performs request and parses data
     forecast.get(latitude, longitude, forecastOptions, function( err, res, data){
-        if (err) throw err; //Todo need proper error handling here
+        if (err) throw err;
 
         //Currently weather handling
         if(data.currently){
@@ -70,8 +70,6 @@ var getWeather = function(startupCallback){
             };
         }
 
-        //Todo how should errors be dealt with client side?
-
         //Hourly weather handling
         weather.hourly = [];
         if(data.hourly){
@@ -85,7 +83,6 @@ var getWeather = function(startupCallback){
                     'conditions': (hourly.summary) ? hourly.summary : 'ERROR',
                     'image': (hourly.icon) ? weatherImageSet + hourly.icon + '.png' : ''
                 };
-                //Todo Needs proper error checking. What if one doesn't have time?
                 if(hourObj.time.substring(0,2) != weather.currently.time.substring(0,2)){
                     weather.hourly.push(hourObj);
                     j++;
