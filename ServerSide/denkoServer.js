@@ -226,21 +226,6 @@ io.on('connection', function (socket) {
     ** Client Requests
     */
 
-    //Request for current weather conditions
-    socket.on('getWeather', function(){
-        socket.emit('receiveWeather', weather)
-    });
-
-    //Request for current contact information
-    socket.on('getContacts', function(){
-       socket.emit('receiveContacts', contacts);
-    });
-
-    //Request for current announcements
-    socket.on('getAnnouncements', function(){
-        socket.emit('receiveAnnouncements', announcements);
-    });
-
     //Sets updated contact information
     socket.on('storeContacts', function(data){
         setContacts(data);
