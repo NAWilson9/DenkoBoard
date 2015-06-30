@@ -3,12 +3,14 @@
  */
 //Link dependencies
 var express = require('express');
-var io = require('socket.io');
+var sockets = require('socket.io');
 var Forecast = require('forecast.io');
 var fs = require('fs');
 
 //Setup server
 var app = express();
+var io = sockets();
+var server;
 var port = 1337;
 
 //Weather setup
@@ -35,19 +37,12 @@ app.use(express.static('../ClientSide/', {
     extensions: ['html']
 }));
 
-//Start web server
-var server = app.listen(port, function () {
-    //Initialize
-    getWeather();
-    getContacts();
-    getAnnouncements();
-
-    //Server started
-    console.log('Denko-Board server running on port ' + port);
-});
+/*
+Server functions
+ */
 
 //Gets weather from server and parses it
-var getWeather = function(){
+var getWeather = function(startupCallback){
     //Options for forecast call
     var forecastOptions = {
         'exclude': 'minutely,daily,flags',
@@ -121,10 +116,12 @@ var getWeather = function(){
     console.log('Updated weather conditions received, parsed, and pushed');
     //Schedules weather refresh every 3 minutes
     setTimeout(getWeather, 180000);
+    //Handles callback if function is being called on server startup
+    if(startupCallback){ startupCallback() }
 };
 
 //Updates contacts with values in file and sends to all clients
-var getContacts = function(){
+var getContacts = function(startupCallback){
     fs.readFile('contacts.json', function(err, data){
         if(err){
             console.log(err);
@@ -132,6 +129,8 @@ var getContacts = function(){
             contacts = JSON.parse(data);
             io.emit('receiveContacts', contacts);
         }
+        //Handles callback if function is being called on server startup
+        if(startupCallback){ startupCallback() }
     });
 };
 
@@ -147,7 +146,7 @@ var setContacts = function(contacts){
 };
 
 //Updates contacts with values in file and sends to all clients
-var getAnnouncements = function(){
+var getAnnouncements = function(startupCallback){
     fs.readFile('announcements.json', function(err, data){
         if(err){
             console.log(err);
@@ -155,6 +154,8 @@ var getAnnouncements = function(){
             announcements = JSON.parse(data);
             io.emit('receiveAnnouncements', announcements);
         }
+        //Handles callback if function is being called on server startup
+        if(startupCallback){ startupCallback() }
     });
 };
 
@@ -169,12 +170,48 @@ var setAnnouncements = function(announcements){
     });
 };
 
+
+//Handles the initial server setup before starting
+var initializeServer = function(startServer) {
+    //Link required startup methods
+    var functions = [getWeather, getContacts, getAnnouncements];
+    var progress = 0;
+    var completion = functions.length;
+    //Callback for each startup method
+    var callback = function () {
+        progress++;
+        if(progress === completion){
+            //All setup is finished
+            console.log('All setup completed');
+            startServer();
+        }
+    };
+    //Invokes all linked functions
+    for (var i = 0; i < completion; i++) {
+        functions[i](callback);
+    }
+};
+
+//Starts the server
+(startServer = function(){
+    //What to do once initialization finishes
+    var start = function(){
+        //Starts the Express server
+        server = app.listen(port, function () {
+            //Server started
+            console.log('Denko-Board web server running on port ' + port);
+
+            //Start socket server
+            io.listen(server);
+            console.log('Denko-Board socket server running on port ' + port);
+        });
+    };
+    initializeServer(start);
+})();
+
 /*
  Websocket stuff
  */
-
-//Start websocket server
-io = io.listen(server);
 
 //Socket routes
 io.on('connection', function (socket) {
@@ -189,7 +226,7 @@ io.on('connection', function (socket) {
     ** Client Requests
     */
 
-    //Request for current weather condiitons
+    //Request for current weather conditions
     socket.on('getWeather', function(){
         socket.emit('receiveWeather', weather)
     });
