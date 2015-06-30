@@ -34,7 +34,7 @@ app.use(express.static('../node_modules/angular'));
 app.use(express.static('../node_modules/bootstrap/dist/css'));
 app.use(express.static('../node_modules/normalize-css'));
 app.use(express.static('../ClientSide/', {
-    extensions: ['html']
+    index: 'client.html'
 }));
 
 /*
@@ -169,9 +169,7 @@ var setAnnouncements = function(announcements){
 
 
 //Handles the initial server setup before starting
-var initializeServer = function(startServer) {
-    //Link required startup methods
-    var functions = [getWeather, getContacts, getAnnouncements];
+var initializeServer = function(functions, startServer) {
     var progress = 0;
     var completion = functions.length;
     //Callback for each startup method
@@ -191,6 +189,9 @@ var initializeServer = function(startServer) {
 
 //Starts the server
 (startServer = function(){
+    //Link required startup methods
+    var functions = [getWeather, getContacts, getAnnouncements];
+
     //What to do once initialization finishes
     var start = function(){
         //Starts the Express server
@@ -203,7 +204,7 @@ var initializeServer = function(startServer) {
             console.log('Denko-Board socket server running on port ' + port);
         });
     };
-    initializeServer(start);
+    initializeServer(functions, start);
 })();
 
 /*
