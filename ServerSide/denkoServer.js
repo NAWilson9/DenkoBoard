@@ -175,33 +175,37 @@ var setAnnouncements = function(announcements){
 
 var feed = function(startupCallback){
     for(var i = 0; i < feeds.length; i++){
-        var parser = new FeedParser();
-        var req = request(feeds[i]);
+        request(feeds[i], function(error, response, html){
+            var parser = new FeedParser();
+            if(error){
+                console.log('Request error: ' + error);
+            } else if (response.statusCode !== 200){
+                console.log('Request status code: ' + response.statusCode);
+            } else{
+                var stream = this;
 
-        req.on('error', function (error) {
-            console.log(error);
-        });
-        req.on('response', function (res) {
-            var stream = this;
-            if (res.statusCode != 200) return this.emit('error', new Error('Bad status code'));
-            stream.pipe(parser);
-        });
-        parser.on('error', function(error) {
-            console.log(error);
-        });
-        parser.on('readable', function() {
-            var stream = this;
-            var meta = this.meta;
-            var item;
+                stream.pipe(parser);
+                //console.log(stream);
+                parser.on('error', function(error) {
+                    console.log(error);
+                });
+                parser.on('readable', function() {
+                    console.log('hype');
+                    var stream = this;
+                    var meta = this.meta;
+                    var item;
 
-            while (item = stream.read()) {
-                var feedData = {
-                    'source': meta.title,
-                    'sourceImg': meta.image.url,
-                    'title': item.title,
-                    'imgUrl': item.image.url
-                };
-                news.push(feedData);
+                    while (item = stream.read()) {
+                        var feedData = {
+                            'source': meta.title,
+                            'sourceImg': meta.image.url,
+                            'title': item.title,
+                            'imgUrl': item.image.url
+                        };
+                        news.push(feedData);
+                        console.log(feedData);
+                    }
+                });
             }
         });
     }
