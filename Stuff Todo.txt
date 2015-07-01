@@ -1,7 +1,6 @@
 - Angular refactor
 - HTML refactor
 - Server refactor (make file parsing 'api')
-- Express tweaks
 - Error handling
 - Styling
 - Speed Optimization

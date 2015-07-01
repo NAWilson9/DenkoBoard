@@ -6,6 +6,8 @@ var express = require('express');
 var sockets = require('socket.io');
 var Forecast = require('forecast.io');
 var fs = require('fs');
+var request = require('request');
+var FeedParser = require('feedparser');
 
 //Setup server
 var app = express();
@@ -26,9 +28,13 @@ var weather = {
     alerts: []
 };
 
-//Info Setup
+//Info setup
 var contacts;
 var announcements;
+
+//News Setup
+var news = [];
+var feeds = ['http://feeds.feedburner.com/elise/simplyrecipes', 'http://feeds.feedburner.com/TechCrunch/'];
 
 app.use(express.static('../node_modules/angular'));
 app.use(express.static('../node_modules/bootstrap/dist/css'));
@@ -167,6 +173,41 @@ var setAnnouncements = function(announcements){
     });
 };
 
+var feed = function(startupCallback){
+    for(var i = 0; i < feeds.length; i++){
+        var parser = new FeedParser();
+        var req = request(feeds[i]);
+
+        req.on('error', function (error) {
+            console.log(error);
+        });
+        req.on('response', function (res) {
+            var stream = this;
+            if (res.statusCode != 200) return this.emit('error', new Error('Bad status code'));
+            stream.pipe(parser);
+        });
+        parser.on('error', function(error) {
+            console.log(error);
+        });
+        parser.on('readable', function() {
+            var stream = this;
+            var meta = this.meta;
+            var item;
+
+            while (item = stream.read()) {
+                var feedData = {
+                    'source': meta.title,
+                    'sourceImg': meta.image.url,
+                    'title': item.title,
+                    'imgUrl': item.image.url
+                };
+                news.push(feedData);
+            }
+        });
+    }
+    if(startupCallback){ startupCallback() }
+};
+
 
 //Handles the initial server setup before starting
 var initializeServer = function(functions, startServer) {
@@ -190,7 +231,7 @@ var initializeServer = function(functions, startServer) {
 //Starts the server
 (startServer = function(){
     //Link required startup methods
-    var functions = [getWeather, getContacts, getAnnouncements];
+    var functions = [getWeather, getContacts, getAnnouncements, feed];
 
     //What to do once initialization finishes
     var start = function(){
@@ -202,6 +243,7 @@ var initializeServer = function(functions, startServer) {
             //Start socket server
             io.listen(server);
             console.log('Denko-Board socket server running on port ' + port);
+            console.log(news);
         });
     };
     initializeServer(functions, start);
@@ -236,6 +278,6 @@ io.on('connection', function (socket) {
 
     //A user has disconnected
     socket.on('disconnect', function () {
-        console.log('A user has disconnected. Total users: ' + io.engine.clientsCount);
+        console.log('A user has disconnected. Total users: ' + io.engine.kclientsCount);
     });
 });
