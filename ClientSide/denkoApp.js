@@ -69,3 +69,20 @@ app.controller('musicController', function($scope){
         { title: 'Atlantis', artist: 'Enei', albumArt: ''}
     ];
 });
+
+//Controller for all news aspects
+app.controller('newsController', function($scope){
+    $scope.news = {};
+
+    //Receives updated news
+    socket.on('receiveNews', function(data){
+        if(data && data.length){
+            $scope.news = data;
+            $scope.$apply();
+            console.log('Updated news has been received');
+            console.log($scope.news);
+        } else {
+            console.log('Updated news object is empty');
+        }
+    });
+});

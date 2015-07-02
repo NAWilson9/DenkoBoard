@@ -20,7 +20,7 @@ var forecastAPIKey = '285d7483f9acc0b5ddf7066e1e238e29';
 var forecast = new Forecast({APIKey: forecastAPIKey});
 var latitude = 42.01915;
 var longitude = -93.64638;
-var hoursToShow = 8;
+var hoursToShow = 7;
 var weatherImageSet = '/Images/WeatherIcons/';
 var weather = {
     currently: '',
@@ -34,7 +34,7 @@ var announcements;
 
 //News Setup
 var news = [];
-var feeds = ['http://feeds.feedburner.com/elise/simplyrecipes', 'http://feeds.feedburner.com/TechCrunch/'];
+var feeds = ['http://feeds.reuters.com/reuters/technologyNews', 'http://feeds.reuters.com/reuters/scienceNews', 'http://feeds.reuters.com/Reuters/domesticNews', 'http://feeds.reuters.com/Reuters/worldNews', 'http://feeds.feedburner.com/TechCrunch/'];
 
 app.use(express.static('../node_modules/angular'));
 app.use(express.static('../node_modules/bootstrap/dist/css'));
@@ -115,7 +115,7 @@ var getWeather = function(startupCallback){
         //Pushes new weather info to all clients
         io.emit('receiveWeather', weather);
         //Weather was retrieved, parsed, and pushed successfully
-        console.log('Updated weather conditions received, parsed, and pushed');
+        console.log('Updated weather conditions received, parsed, and pushed.');
         //Handles callback if function is being called on server startup
         if(startupCallback){ startupCallback() }
     });
@@ -173,90 +173,77 @@ var setAnnouncements = function(announcements){
     });
 };
 
-var feed = function(startupCallback) {
+//Gets fresh news feed data
+var getNews = function(startupCallback) {
+    var feedsFinished = 0;
+    //Runs for each feed
     for (var i = 0; i < feeds.length; i++) {
-        var req = request(feeds[i]);
-        var parser = new FeedParser();
+        //Makes request to rss feed
+        var req = new request(feeds[i]);
+
+        //Request error
         req.on('error', function (error) {
-            console.log('There was an error making a feed request.')
+            console.log('There was an error making a feed request.');
             console.log(error);
         });
-        req.on('response', function (res) {
-            var stream = this;
 
+        //Request successful
+        req.on('response', function (res) {
+            //Server returned an error
             if (res.statusCode != 200){
                 return this.emit('error', new Error('Bad status code'));
             }
+            var stream = this;
+            var parser = new FeedParser();
+            //Parser error
+            parser.on('error', function (error) {
+                console.log('There was an error parsing the rss feed.');
+                console.log(error);
+            });
+
+            //Parser ok
+            parser.on('readable', function () {
+                var stream = this;
+                var item;
+                while (item = stream.read()) {
+                    var feedData = {
+                        'source': item.meta.title,
+                        //'sourceImg': item.meta.image.url,
+                        'title': item.title
+                        //'imgUrl': item.image.url
+                    };
+                    news.push(feedData);
+                }
+            });
+
+            //Feed reading has ended
+            parser.on('end', function(){
+                feedsFinished++;
+                //If all reading has finished
+                if(feedsFinished === feeds.length){
+                    var m = news.length, t, i;
+                    // While there remain elements to shuffle…
+                    while (m) {
+                        // Pick a remaining element…
+                        i = Math.floor(Math.random() * m--);
+                        // And swap it with the current element.
+                        t = news[m];
+                        news[m] = news[i];
+                        news[i] = t;
+                    }
+                    //Pushes new weather info to all clients
+                    io.emit('receiveNews', news);
+                    console.log('Updated feeds received, parsed, scrambled, and pushed.');
+                    if(startupCallback){startupCallback()}
+                }
+            });
+            //Sends data to the parser
             stream.pipe(parser);
         });
-
-
-        parser.on('error', function (error) {
-            // always handle errors
-        });
-        parser.on('readable', function () {
-            // This is where the action is!
-            var stream = this
-                , meta = this.meta // **NOTE** the "meta" is always available in the context of the feedparser instance
-                , item;
-
-            while (item = stream.read()) {
-                var feedData = {
-                    'source': meta.title,
-                    'sourceImg': meta.image.url,
-                    'title': item.title,
-                    'imgUrl': item.image.url
-                };
-                console.log(feedData);
-                news.push(feedData);
-            }
-        });
     }
+    //Schedules news refresh every 5 minutes
+    setTimeout(getNews, 300000);
 };
-
-/*var feed = function(startupCallback){
-    for(var i = 0; i < feeds.length; i++){
-        var feedparser = new FeedParser();
-        var req = request(feeds[i]);
-
-                stream.pipe(parser);
-            }
-        });
-    }
-    if(startupCallback){ startupCallback() }
-};
-
-
-        req.on('error', function (error) {
-            console.log(error);
-        });
-        req.on('response', function (res) {
-            var stream = this;
-            if (res.statusCode != 200) return this.emit('error', new Error('Bad status code'));
-            stream.pipe(feedparser);
-        });
-        feedparser.on('error', function(error) {
-            console.log(error);
-        });
-        feedparser.on('readable', function() {
-            var stream = this;
-            var meta = this.meta;
-            var item;
-
-            while (item = stream.read()) {
-                var feedData = {
-                    'source': meta.title,
-                    'sourceImg': meta.image.url,
-                    'title': item.title,
-                    'imgUrl': item.image.url
-                };
-                news.push(feedData);
-            }
-        });
-    }
-    if(startupCallback){ startupCallback() }
-};*/
-
 
 //Handles the initial server setup before starting
 var initializeServer = function(functions, startServer) {
@@ -280,7 +267,7 @@ var initializeServer = function(functions, startServer) {
 //Starts the server
 (startServer = function(){
     //Link required startup methods
-    var functions = [getWeather, getContacts, getAnnouncements, feed];
+    var functions = [getWeather, getContacts, getAnnouncements, getNews];
 
     //What to do once initialization finishes
     var start = function(){
@@ -292,7 +279,6 @@ var initializeServer = function(functions, startServer) {
             //Start socket server
             io.listen(server);
             console.log('Denko-Board socket server running on port ' + port);
-            console.log(news);
         });
     };
     initializeServer(functions, start);
@@ -310,6 +296,7 @@ io.on('connection', function (socket) {
     socket.emit('receiveWeather', weather);
     socket.emit('receiveAnnouncements', announcements);
     socket.emit('receiveContacts', contacts);
+    socket.emit('receiveNews', news);
 
     /*
     ** Client Requests
@@ -327,6 +314,6 @@ io.on('connection', function (socket) {
 
     //A user has disconnected
     socket.on('disconnect', function () {
-        console.log('A user has disconnected. Total users: ' + io.engine.kclientsCount);
+        console.log('A user has disconnected. Total users: ' + io.engine.clientsCount);
     });
 });

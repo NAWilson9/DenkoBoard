@@ -77,8 +77,8 @@
             </li>
         </ul>
     </section>
-    <section id="news" class="hidden-xs col-md-12">
-        <span>News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News News </span>
+    <section id="news" class="hidden-xs col-md-12" ng-controller="newsController">
+        <marquee behavior="scroll" direction="left"  scrollamount="1" scrolldelay="20" truespeed="true"><span ng-repeat="temp in news">{{temp.title}} - {{temp.source}} | </span></marquee>
     </section>
 </body>
 </html>
