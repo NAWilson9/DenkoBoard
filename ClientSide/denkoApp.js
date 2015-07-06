@@ -79,7 +79,7 @@ app.controller('newsController', function($scope){
         if(data && data.length){
             $scope.news = data;
             $scope.$apply();
-            console.log('Updated news has been received');
+            console.log('Updated news has been received: ' + data.length);
             console.log($scope.news);
         } else {
             console.log('Updated news object is empty');

@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="denkoStyle.css">
     <!-- Script stuff -->
     <script src="angular.js"></script>
+    <script src="marquee.js"></script>
     <script src="denkoApp.js"></script>
     <script src="./socket.io/socket.io.js"></script>
     <script>
@@ -78,7 +79,51 @@
         </ul>
     </section>
     <section id="news" class="hidden-xs col-md-12" ng-controller="newsController">
-        <marquee behavior="scroll" direction="left"  scrollamount="1" scrolldelay="20" truespeed="true"><span ng-repeat="temp in news">{{temp.title}} - {{temp.source}} | </span></marquee>
+        <style type="text/css">
+            .scroller {
+                overflow: hidden;
+                position: relative
+            }
+            #scroller, {
+                width: 100%;
+                margin: 5px;
+                border: solid 1px red
+            }
+            ul {
+                float: left;
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+            ul li {
+                float: left;
+                padding: 2px
+            }
+            ul li a {
+                padding: 3px;
+                text-decoration: none;
+                color: #fff;
+                background-color: #ccc
+            }
+        </style>
+        <!--<marquee behavior="scroll" direction="left"  scrollamount="1" scrolldelay="10" truespeed="true"><span ng-repeat="temp in news">{{temp.title}} - {{temp.source}} | </span></marquee> -->
+        <span id="scroller" class="scroller">
+            <ul>
+                <li><a href="#">Item 1</a></li>
+                <li><a href="#">Item 2</a></li>
+                <li><a href="#">Item 3</a></li>
+                <li><a href="#">Item 4</a></li>
+                <li><a href="#">Item 5</a></li>
+                <li><a href="#">Item 6</a></li>
+                <li><a href="#">Item 7</a></li>
+                <li><a href="#">Item 8</a></li>
+                <li><a href="#">Item 9</a></li>
+                <li><a href="#">Item 10</a></li>
+            </ul>
+        </span>
+        <script>
+            new Marquee('scroller');
+        </script>
     </section>
 </body>
 </html>
