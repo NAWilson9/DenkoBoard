@@ -1,11 +1,12 @@
 /**
  * Created by nwilson on 6/15/2015.
  */
-
 var app = angular.module('denkoAdminApp', []);
 
+//Token used to authenticate all data being pushed to the server
 var token = '';
 
+//Controller responsible for handling the editing of data types on the admin page
 app.controller('dataEditor', function($scope){
     var dataType = {};
     $scope.title = '';
@@ -77,32 +78,41 @@ app.controller('dataEditor', function($scope){
     };
 });
 
+//Controller responsible for handling the admin login
 app.controller('login', function($scope){
+    $scope.username = '';
     $scope.password = '';
 
-    //Sets up the controller for the type of data it's handling and registers the listener socket
+    //Registers the listener socket for authentication confirmation
     $scope.init = function(){
         socket.on('authenticationResponse', function(data){
             if(data && data.length > 0){
                 token = data;
                 console.log('Authentication successful');
             } else{
-                console.log('Authentication failed');
+                console.error('Authentication failed');
                 alert("Authentication failed");
             }
         })
     };
 
+    //Function that pushes login credentials to the server
     $scope.authenticate = function(){
-        socket.emit('authenticate', $scope.password);
+        var credentials = {
+            username: $scope.username,
+            password: $scope.password
+        };
+        socket.emit('authenticate', credentials);
     }
 });
 
+//Controller responsible for handling the admin page as a whole
 app.controller('admin', function($scope){
     var adminLogin = 'adminLogin.html';
     var adminEditor = 'adminEditor.html';
     $scope.template = adminLogin;
 
+    //Registers the authentication response listener which handles the loading of the admin editor
     socket.on('authenticationResponse', function(data) {
         if (data && data.length > 0) {
             $scope.template = adminEditor;

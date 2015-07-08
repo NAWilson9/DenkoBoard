@@ -14,12 +14,12 @@ var app = express();
 var io = sockets();
 var server;
 var port = 1337;
-var passwords = ['hype', 'bic'];
-var authenticationToken = 'OMGWOWSOSHREKT';
+var adminCredentials = [];
+var authenticationToken = '';
 
 //Weather setup
-var forecastAPIKey = '285d7483f9acc0b5ddf7066e1e238e29';
-var forecast = new Forecast({APIKey: forecastAPIKey});
+var forecastAPIKey = '';
+var forecast;
 var latitude = 42.01915;
 var longitude = -93.64638;
 var hoursToShow = 7;
@@ -52,6 +52,19 @@ Server functions
 
 //Gets weather from server and parses it
 var getWeather = function(startupCallback){
+    //Makes sure forecast is defined
+    if(!forecast){
+        //Make sure the api key is populated. Needed to give the getCredentials function a chance to finish executing
+        if(!forecastAPIKey){
+            setTimeout(function(){
+                getWeather(startupCallback);
+            }, 1000 );
+            return;
+        } else{
+            forecast = new Forecast({APIKey: forecastAPIKey});
+        }
+    }
+
     //Options for forecast call
     var forecastOptions = {
         'exclude': 'minutely,daily,flags',
@@ -248,6 +261,22 @@ var getNews = function(startupCallback) {
     setTimeout(getNews, 300000);
 };
 
+//Populates all of the credential/authentication variables
+var getCredentials = function(startupCallback){
+    fs.readFile('credentials.json', function(err, data){
+        if(err){
+            console.log(err);
+        } else{
+            var credentialData = JSON.parse(data);
+            forecastAPIKey = credentialData.forecastApiKey;
+            authenticationToken = credentialData.serverAuthenticationToken;
+            adminCredentials = credentialData.adminCredentials;
+        }
+        //Handles callback if function is being called on server startup
+        if(startupCallback){ startupCallback() }
+    });
+};
+
 //Handles the initial server setup before starting
 var initializeServer = function(functions, startServer) {
     var progress = 0;
@@ -270,7 +299,7 @@ var initializeServer = function(functions, startServer) {
 //Starts the server
 (startServer = function(){
     //Link required startup methods
-    var functions = [getWeather, getContacts, getAnnouncements, getNews];
+    var functions = [getCredentials, getContacts, getAnnouncements, getNews, getWeather];
 
     //What to do once initialization finishes
     var start = function(){
@@ -306,11 +335,14 @@ io.on('connection', function (socket) {
     */
 
     socket.on('authenticate', function(data){
-       if(passwords.indexOf(data) >= 0){
-           socket.emit('authenticationResponse', authenticationToken);
-       } else {
-           socket.emit('authenticationResponse', '');
-       }
+        for(var i = 0; i < adminCredentials.length; i++){
+            if(adminCredentials[i].username === data.username && adminCredentials[i].password === data.password){
+                socket.emit('authenticationResponse', authenticationToken);
+                console.log(new Date().toLocaleTimeString() + ' | ' + data.username + ' has logged in.');
+                return;
+            }
+        }
+       socket.emit('authenticationResponse', '');
     });
 
     //Sets updated contact information
@@ -327,7 +359,7 @@ io.on('connection', function (socket) {
         socket.emit('receiveAnnouncements', announcements);
     });
 
-    //Returns updated contacts on user reques
+    //Returns updated contacts on user request
     socket.on('requestContacts', function(){
         socket.emit('receiveContacts', contacts);
     });
@@ -343,6 +375,6 @@ io.on('connection', function (socket) {
 
     //A user has disconnected
     socket.on('disconnect', function () {
-        console.log('A user has disconnected. Total users: ' + io.engine.clientsCount);
+        console.log(new Date().toLocaleTimeString() + ' | A user has disconnected. Total users: ' + io.engine.clientsCount);
     });
 });
