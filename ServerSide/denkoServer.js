@@ -14,6 +14,8 @@ var app = express();
 var io = sockets();
 var server;
 var port = 1337;
+var passwords = ['hype', 'bic'];
+var authenticationToken = 'OMGWOWSOSHREKT';
 
 //Weather setup
 var forecastAPIKey = '285d7483f9acc0b5ddf7066e1e238e29';
@@ -40,6 +42,7 @@ app.use(express.static('../node_modules/angular'));
 app.use(express.static('../node_modules/bootstrap/dist/css'));
 app.use(express.static('../node_modules/normalize-css'));
 app.use(express.static('../ClientSide/', {
+    extensions: ['html'],
     index: 'client.html'
 }));
 
@@ -115,7 +118,7 @@ var getWeather = function(startupCallback){
         //Pushes new weather info to all clients
         io.emit('receiveWeather', weather);
         //Weather was retrieved, parsed, and pushed successfully
-        console.log('Updated weather conditions received, parsed, and pushed.');
+        console.log(new Date().toLocaleTimeString() + ' | Updated weather conditions received, parsed, and pushed.');
         //Handles callback if function is being called on server startup
         if(startupCallback){ startupCallback() }
     });
@@ -233,7 +236,7 @@ var getNews = function(startupCallback) {
                     }
                     //Pushes new weather info to all clients
                     io.emit('receiveNews', news);
-                    console.log('Updated feeds received, parsed, scrambled, and pushed.');
+                    console.log( new Date().toLocaleTimeString() + ' | Updated feeds received, parsed, scrambled, and pushed.');
                     if(startupCallback){startupCallback()}
                 }
             });
@@ -290,7 +293,7 @@ var initializeServer = function(functions, startServer) {
 
 //Socket routes
 io.on('connection', function (socket) {
-    console.log('A user has connected. Total users: ' + io.engine.clientsCount);
+    console.log(new Date().toLocaleTimeString() + ' | A user has connected. Total users: ' + io.engine.clientsCount);
 
     //On connect, send client current info
     socket.emit('receiveWeather', weather);
@@ -302,14 +305,40 @@ io.on('connection', function (socket) {
     ** Client Requests
     */
 
+    socket.on('authenticate', function(data){
+       if(passwords.indexOf(data) >= 0){
+           socket.emit('authenticationResponse', authenticationToken);
+       } else {
+           socket.emit('authenticationResponse', '');
+       }
+    });
+
     //Sets updated contact information
     socket.on('storeContacts', function(data){
-        setContacts(data);
+        if(data.authentication === authenticationToken){
+            setContacts(data.data);
+        } else {
+            console.log('An unauthenticated attempt at setting data has been made');
+        }
+    });
+
+    //Returns updated announcements on user request
+    socket.on('requestAnnouncements', function(){
+        socket.emit('receiveAnnouncements', announcements);
+    });
+
+    //Returns updated contacts on user reques
+    socket.on('requestContacts', function(){
+        socket.emit('receiveContacts', contacts);
     });
 
     //Sets updated announcement information
     socket.on('storeAnnouncements', function(data){
-        setAnnouncements(data);
+        if(data.authentication === authenticationToken){
+            setAnnouncements(data.data);
+        } else {
+            console.log('An unauthenticated attempt at setting data has been made');
+        }
     });
 
     //A user has disconnected

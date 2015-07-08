@@ -19,7 +19,7 @@
     </script>
 </head>
 <body class="container-fluid">
-    <section id="info" class="col-xs-12 col-md-6 col-lg-4 col-lg-push-4" ng-controller="infoController">
+    <section id="info"  class="col-xs-12 col-md-6 col-lg-4 col-lg-push-4 panel" ng-controller="infoController">
         <section ng-click="test()" id="title" ng-init="tick()">
             <h1>Denko-Board</h1>
             <span>Maverick Image</span>
@@ -44,8 +44,8 @@
             </ul>
         </section>
     </section>
-    <section id="musicList" class="col-xs-12 col-md-6 col-lg-4 col-lg-pull-4" ng-controller="musicController">
-        <ul>
+    <section id="musicList" class="col-xs-12 col-md-6 col-lg-4 col-lg-pull-4 panel" ng-controller="musicController">
+        <ul class="panel-default">
             <li ng-repeat="song in songs">
                 <p>Track: {{song.title}}</p>
                 <p>Artist: {{song.artist}}</p>
@@ -53,7 +53,7 @@
             </li>
         </ul>
     </section>
-    <section id="weather" class="col-xs-12 col-lg-4" ng-controller="weatherController">
+    <section id="weather" class="col-xs-12 col-lg-4 panel" ng-controller="weatherController">
         <ul class="container-fluid" ng-show="weather.currently">
             <li class="row weatherList">
                 <ul class="col-xs-6">
@@ -61,9 +61,9 @@
                     <li>Temperature: {{weather.currently.temperature}} &#8457;</li>
                     <li>Conditions: {{weather.currently.conditions}}</li>
                 </ul>
-                <span class="col-xs-6">
-                    <img ng-src="{{weather.currently.image}}">
-                </span>
+            <span class="col-xs-6">
+                <img ng-src="{{weather.currently.image}}">
+            </span>
             </li>
             <li class="row weatherList" ng-repeat="hour in weather.hourly">
                 <ul class="col-xs-6">
@@ -71,13 +71,13 @@
                     <li>Temperature: {{hour.temperature}} &#8457;</li>
                     <li>Conditions: {{hour.conditions}}</li>
                 </ul>
-                <span class="col-xs-6">
-                    <img ng-src="{{hour.image}}">
-                </span>
+            <span class="col-xs-6">
+                <img ng-src="{{hour.image}}">
+            </span>
             </li>
         </ul>
     </section>
-    <section id="news" class="hidden-xs col-md-12" ng-controller="newsController">
+    <section id="news" class="hidden-xs col-md-12 panel" ng-controller="newsController">
         <marquee><span ng-repeat="temp in news">{{temp.title}} - {{temp.source}} | </span></marquee>
     </section>
 </body>

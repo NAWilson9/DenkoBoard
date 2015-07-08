@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="normalize.css">
     <link rel="stylesheet" href="bootstrap.min.css">
-    <link rel="stylesheet" href="denkoStyle.css">
+    <link rel="stylesheet" href="denkoAdminStyle.css">
     <!-- Script stuff -->
     <script src="angular.js"></script>
     <script src="denkoAdminApp.js"></script>
@@ -18,59 +18,10 @@
         var socket = io.connect(window.location.origin);
     </script>
 </head>
-<body class="container-fluid">
-    <header class="col-xs-12">
-        <h1>Denko-Board Admin Page <small><a href="/">Denko-Board</a></small></h1>
+<body class="container-fluid" ng-controller="admin">
+    <header class="navbar navbar-fixed-top">
+        <h1><img id="headerImage" src="Images/Favicons/ms-icon-310x310.png" height="75">Denko-Board Admin Page <small><a href="/">Denko-Board</a></small></h1>
     </header>
-    <main>
-        <section class="col-xs-12 col-lg-5" ng-controller="dataEditor" ng-init="init('contacts')">
-            <h2 class="row col-xs-12">{{title}} Editor</h2>
-            <div class="row">
-                <span class="col-xs-3">Title</span>
-                <span class="col-xs-7">Value</span>
-            </div>
-            <ul class="row">
-                <li ng-repeat="dataObject in data track by $index">
-                    <input class="col-xs-3" type="text" ng-model="dataObject.title">
-                    <input class="col-xs-7" type="text"  ng-model="dataObject.value">
-                    <button class="col-xs-2" ng-click="deleteData($index)">Delete</button>
-                </li>
-                <li>
-                    <input class="col-xs-3" type="text" ng-model="newData.title">
-                    <input class="col-xs-7" type="text" ng-model="newData.value">
-                    <button class="col-xs-1" ng-click="clearNewData()">Clear</button>
-                    <button class="col-xs-1" ng-click="addNewData()">Add</button>
-                </li>
-            </ul>
-            <button ng-click="submit()">Submit</button>
-        </section>
-        <section class="col-xs-12 col-lg-7" ng-controller="dataEditor" ng-init="init('announcements')">
-            <h2 class="row col-xs-12">{{title}} Editor</h2>
-            <div class="row">
-                <span class="col-xs-3">Type</span>
-                <span class="col-xs-7">Value</span>
-            </div>
-            <ul class="row">
-                <li ng-repeat="dataObject in data track by $index">
-                    <input class="col-xs-3" type="text" ng-model="dataObject.title">
-                    <input class="col-xs-7" type="text"  ng-model="dataObject.value">
-                    <button class="col-xs-2" ng-click="deleteData($index)">Delete</button>
-                </li>
-                <li>
-                    <input class="col-xs-3" type="text" ng-model="newData.title">
-                    <input class="col-xs-7" type="text" ng-model="newData.value">
-                    <button class="col-xs-1" ng-click="clearNewData()">Clear</button>
-                    <button class="col-xs-1" ng-click="addNewData()">Add</button>
-                </li>
-            </ul>
-            <button ng-click="submit()">Submit</button>
-            <div>
-                Enter your password
-                <input type="text" ng-model="announcements.test">
-                <button ng-click="submitPassword()">Submit</button>
-                <span>{{temp}}</span>
-            </div>
-        </section>
-    </main>
+    <ng-include src="template"></ng-include>
 </body>
 </html>

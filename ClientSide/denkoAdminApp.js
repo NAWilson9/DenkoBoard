@@ -4,6 +4,8 @@
 
 var app = angular.module('denkoAdminApp', []);
 
+var token = '';
+
 app.controller('dataEditor', function($scope){
     var dataType = {};
     $scope.title = '';
@@ -14,18 +16,19 @@ app.controller('dataEditor', function($scope){
     $scope.init = function(type){
       if(type == 'announcements'){
           dataType.data = 'announcement';
+          dataType.request = 'requestAnnouncements';
           dataType.receive = 'receiveAnnouncements';
           dataType.store = 'storeAnnouncements';
           $scope.title = 'Announcement';
       }  else if (type == 'contacts'){
           dataType.data = 'contact';
+          dataType.request = 'requestContacts';
           dataType.receive = 'receiveContacts';
           dataType.store = 'storeContacts';
           $scope.title = 'Contact';
       }
         //Receives updated data
         socket.on(dataType.receive, function(data){
-            console.log('hype');
             if(data && data.length){
                 $scope.data = data;
                 $scope.$apply();
@@ -34,6 +37,9 @@ app.controller('dataEditor', function($scope){
                 console.log('Updated ' + dataType.data + 'object is empty');
             }
         });
+
+        //Requests updated data
+        socket.emit(dataType.request);
     };
 
     //Deletes a data item
@@ -43,7 +49,11 @@ app.controller('dataEditor', function($scope){
 
     //Called when the submit button is hit
     $scope.submit = function(){
-        socket.emit(dataType.store, $scope.data);
+        var sendData = {
+            authentication: token,
+            data: $scope.data
+        };
+        socket.emit(dataType.store, sendData);
     };
 
     //Clears the values of the new data cells
@@ -65,4 +75,38 @@ app.controller('dataEditor', function($scope){
             $scope.clearNewData();
         }
     };
+});
+
+app.controller('login', function($scope){
+    $scope.password = '';
+
+    //Sets up the controller for the type of data it's handling and registers the listener socket
+    $scope.init = function(){
+        socket.on('authenticationResponse', function(data){
+            if(data && data.length > 0){
+                token = data;
+                console.log('Authentication successful');
+            } else{
+                console.log('Authentication failed');
+                alert("Authentication failed");
+            }
+        })
+    };
+
+    $scope.authenticate = function(){
+        socket.emit('authenticate', $scope.password);
+    }
+});
+
+app.controller('admin', function($scope){
+    var adminLogin = 'adminLogin.html';
+    var adminEditor = 'adminEditor.html';
+    $scope.template = adminLogin;
+
+    socket.on('authenticationResponse', function(data) {
+        if (data && data.length > 0) {
+            $scope.template = adminEditor;
+            $scope.$apply();
+        }
+    });
 });

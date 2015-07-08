@@ -1,0 +1,9 @@
+<main id="loginContainer" class="text-center" ng-controller="login" ng-init="init()">
+    <form class="well horizontal-form">
+        <h2>Admin Login</h2>
+        <input type="text" class="form-control" placeholder="Username" ng-model="username">
+        <input type="password" class="form-control" placeholder="Password" ng-model="password">
+        <br/>
+        <button class="btn btn-primary" type="submit" ng-click="authenticate()">Submit</button>
+    </form>
+</main>
