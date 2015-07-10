@@ -4,7 +4,13 @@
 var app = angular.module('denkoAdminApp', []);
 
 //Token used to authenticate all data being pushed to the server
-var token = '';
+var authenticationToken = '';
+
+//Templates
+var templateFolder = '/Templates/';
+var adminLogin = 'adminLogin.html';
+var adminEditor = 'adminEditor.html';
+var adminPasswordReset = 'adminPasswordReset.html';
 
 //Controller responsible for handling the editing of data types on the admin page
 app.controller('dataEditor', function($scope){
@@ -51,7 +57,7 @@ app.controller('dataEditor', function($scope){
     //Called when the submit button is hit
     $scope.submit = function(){
         var sendData = {
-            authentication: token,
+            authentication: authenticationToken,
             data: $scope.data
         };
         socket.emit(dataType.store, sendData);
@@ -78,45 +84,115 @@ app.controller('dataEditor', function($scope){
     };
 });
 
+//Controller responsible for handling resetting admin passwords
+app.controller('passwordReset', function($scope) {
+    $scope.username = '';
+    $scope.questionAnswer = '';
+    $scope.newPassword = '';
+    $scope.question = 'Security Question';
+
+    //Array containing list of admin usernames and security questions
+    var adminSecurityData = [];
+
+    //Gets security credentials to reset password
+    socket.emit('getPasswordResetData');
+
+    //Listens for username/security question data
+    socket.on('receivePasswordResetData', function (data) {
+        if (data && data.length) {
+            adminSecurityData = data;
+        } else {
+            console.error('There was a problem receiving the admin security credentials.');
+        }
+    });
+
+    //Handles the security question population based on username input typing
+    $scope.questionTextPopulate = function () {
+        for (var i = 0; i < adminSecurityData.length; i++) {
+            if (adminSecurityData[i].username == $scope.username) {
+                $scope.question = adminSecurityData[i].securityQuestion;
+                return;
+            }
+        }
+        $scope.question = 'Security Question';
+    };
+
+    //Sends new password to server
+    $scope.pushPassword = function () {
+        var credentials = {
+            username: $scope.username,
+            questionAnswer: $scope.questionAnswer,
+            newPassword: $scope.password
+        };
+        socket.emit('setAdminPassword', credentials);
+    };
+
+    socket.on('setPasswordResult', function (data) {
+        if (data == true) {
+            console.log('Password successfully updated');
+            alert('Password successfully updated');
+            $scope.$emit('changeView', 'adminLogin.html');
+        } else {
+            console.log('Password change rejected');
+            alert('Invalid recovery question answer');
+            $scope.questionAnswer = '';
+            $scope.password = '';
+            $scope.$apply();
+        }
+    });
+});
+
 //Controller responsible for handling the admin login
 app.controller('login', function($scope){
     $scope.username = '';
     $scope.password = '';
 
-    //Registers the listener socket for authentication confirmation
-    $scope.init = function(){
-        socket.on('authenticationResponse', function(data){
-            if(data && data.length > 0){
-                token = data;
-                console.log('Authentication successful');
-            } else{
-                console.error('Authentication failed');
-                alert("Authentication failed");
-            }
-        })
-    };
-
     //Function that pushes login credentials to the server
-    $scope.authenticate = function(){
-        var credentials = {
+    $scope.login = function(){
+        var userCredentials = {
             username: $scope.username,
             password: $scope.password
         };
-        socket.emit('authenticate', credentials);
-    }
+        socket.emit('adminLogin', userCredentials);
+    };
+
+    //Registers the listener socket for authentication response
+    socket.on('adminLoginResponse', function(data){
+        //The authentication was successful
+        if(data && data.length > 0 && data != 'denied'){
+            authenticationToken = data;
+            console.log('Login successful');
+            $scope.$emit('changeView','adminEditor.html');
+        } else if(data && data == 'denied'){
+            console.error('Invalid username or password');
+            alert("Invalid username or password");
+        } else {
+            console.error('Login attempt failed');
+            alert("Login attempt failed");
+        }
+    });
 });
 
 //Controller responsible for handling the admin page as a whole
 app.controller('admin', function($scope){
-    var adminLogin = 'adminLogin.html';
-    var adminEditor = 'adminEditor.html';
-    $scope.template = adminLogin;
+    //Initial view setup
+    $scope.template = templateFolder + adminLogin;
 
-    //Registers the authentication response listener which handles the loading of the admin editor
-    socket.on('authenticationResponse', function(data) {
-        if (data && data.length > 0) {
-            $scope.template = adminEditor;
+    //Changes the admin view based on the view received from other admin controllers
+    $scope.$on('changeView', function(event, data){
+        switch(data) {
+            case adminPasswordReset:
+                $scope.template = templateFolder + adminPasswordReset;
+                break;
+            case adminEditor:
+                $scope.template = templateFolder + adminEditor;
+                break;
+            case adminLogin:
+                $scope.template = templateFolder + adminLogin;
+        }
+        //Makes sure $apply is called only if it's not already in progress
+        if(!$scope.$$phase){
             $scope.$apply();
         }
-    });
+    })
 });

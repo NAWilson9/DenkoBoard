@@ -74,7 +74,11 @@ var getWeather = function(startupCallback){
 
     //Performs request and parses data
     forecast.get(latitude, longitude, forecastOptions, function( err, res, data){
-        if (err) throw err;
+        if (err){
+            console.log('Unable to get weather. Trying again...');
+            getWeather();
+            return;
+        }
 
         //Currently weather handling
         if(data.currently){
@@ -192,6 +196,7 @@ var setAnnouncements = function(announcements){
 //Gets fresh news feed data
 var getNews = function(startupCallback) {
     var feedsFinished = 0;
+    news = [];
     //Runs for each feed
     for (var i = 0; i < feeds.length; i++) {
         //Makes request to rss feed
@@ -271,9 +276,27 @@ var getCredentials = function(startupCallback){
             forecastAPIKey = credentialData.forecastApiKey;
             authenticationToken = credentialData.serverAuthenticationToken;
             adminCredentials = credentialData.adminCredentials;
+
         }
         //Handles callback if function is being called on server startup
         if(startupCallback){ startupCallback() }
+    });
+};
+
+
+var setCredentials = function(credentials){
+    var dataToWrite = {
+        forecastApiKey: forecastAPIKey,
+        serverAuthenticationToken: authenticationToken,
+        adminCredentials: credentials
+    };
+
+    fs.writeFile('credentials.json', JSON.stringify(dataToWrite, null, 4), function(err){
+        if(err) {
+            console.log(err);
+        } else{
+            getCredentials();
+        }
     });
 };
 
@@ -322,7 +345,7 @@ var initializeServer = function(functions, startServer) {
 
 //Socket routes
 io.on('connection', function (socket) {
-    console.log(new Date().toLocaleTimeString() + ' | A user has connected. Total users: ' + io.engine.clientsCount);
+    console.log(new Date().toLocaleTimeString() + ' | A user has connected. IP Address: ' + socket.handshake.address +  ' Total users: ' + io.engine.clientsCount);
 
     //On connect, send client current info
     socket.emit('receiveWeather', weather);
@@ -334,15 +357,43 @@ io.on('connection', function (socket) {
     ** Client Requests
     */
 
-    socket.on('authenticate', function(data){
+    socket.on('adminLogin', function(data){
         for(var i = 0; i < adminCredentials.length; i++){
             if(adminCredentials[i].username === data.username && adminCredentials[i].password === data.password){
-                socket.emit('authenticationResponse', authenticationToken);
+                socket.emit('adminLoginResponse', authenticationToken);
                 console.log(new Date().toLocaleTimeString() + ' | ' + data.username + ' has logged in.');
                 return;
             }
         }
-       socket.emit('authenticationResponse', '');
+       socket.emit('adminLoginResponse', 'denied');
+    });
+
+    socket.on('setAdminPassword', function(data){
+        for(var i = 0; i < adminCredentials.length; i++){
+            if(adminCredentials[i].username == data.username && adminCredentials[i].securityAnswer == data.questionAnswer){
+                adminCredentials[i].password = data.newPassword;
+                setCredentials(adminCredentials);
+                console.log(new Date().toLocaleTimeString() + ' | Password changed for user ' + data.username);
+                socket.emit('setPasswordResult', true);
+                return;
+            }
+        }
+        console.log(new Date().toLocaleTimeString() + ' | Attempted password change for user ' + data.username);
+        socket.emit('setPasswordResult', false);
+    });
+
+    socket.on('getPasswordResetData', function(data){
+        var adminSecurityCredentials = function(username, securityQuestion){
+                this.username = username;
+                this.securityQuestion = securityQuestion;
+        };
+        var admins = [];
+
+        for(var i = 0; i < adminCredentials.length; i++){
+            admins.push(new adminSecurityCredentials(adminCredentials[i].username, adminCredentials[i].securityQuestion));
+        }
+
+        socket.emit('receivePasswordResetData', admins);
     });
 
     //Sets updated contact information
