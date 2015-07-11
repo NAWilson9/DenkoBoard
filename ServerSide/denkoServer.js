@@ -8,6 +8,7 @@ var Forecast = require('forecast.io');
 var fs = require('fs');
 var request = require('request');
 var FeedParser = require('feedparser');
+var security = require('./NicksJSSecurityTools');
 
 //Setup server
 var app = express();
@@ -16,6 +17,9 @@ var server;
 var port = 1337;
 var adminCredentials = [];
 var authenticationToken = '';
+var maxClientConnections = 3;
+var socketTimeout = 1000;
+var debounceThreshold = 5;
 
 //Weather setup
 var forecastAPIKey = '';
@@ -50,6 +54,8 @@ app.use(express.static('../ClientSide/', {
 Server functions
  */
 
+var errorCount = 0;
+
 //Gets weather from server and parses it
 var getWeather = function(startupCallback){
     //Makes sure forecast is defined
@@ -72,12 +78,18 @@ var getWeather = function(startupCallback){
         'units': 'us'
     };
 
+
     //Performs request and parses data
     forecast.get(latitude, longitude, forecastOptions, function( err, res, data){
         if (err){
-            console.log('Unable to get weather. Trying again...');
-            getWeather();
+            setTimeout(function(){
+                console.log('Unable to get weather. Trying again...');
+                getWeather();
+            }, 1000 * errorCount);
+            errorCount++;
             return;
+        } else {
+            errorCount = 0;
         }
 
         //Currently weather handling
@@ -139,8 +151,8 @@ var getWeather = function(startupCallback){
         //Handles callback if function is being called on server startup
         if(startupCallback){ startupCallback() }
     });
-    //Schedules weather refresh every 3 minutes
-    setTimeout(getWeather, 180000);
+    //Schedules weather refresh every 5 minutes
+    setTimeout(getWeather, 5 * 60000);
 };
 
 //Updates contacts with values in file and sends to all clients
@@ -270,7 +282,13 @@ var getNews = function(startupCallback) {
 var getCredentials = function(startupCallback){
     fs.readFile('credentials.json', function(err, data){
         if(err){
-            console.log(err);
+            if(err.code == 'ENOENT'){
+                console.error('No credential file present.');
+                process.exit(1);
+            } else {
+                console.log(err);
+            }
+
         } else{
             var credentialData = JSON.parse(data);
             forecastAPIKey = credentialData.forecastApiKey;
@@ -320,12 +338,14 @@ var initializeServer = function(functions, startServer) {
 };
 
 //Starts the server
-(startServer = function(){
+(function(){
     //Link required startup methods
     var functions = [getCredentials, getContacts, getAnnouncements, getNews, getWeather];
 
     //What to do once initialization finishes
     var start = function(){
+        security.init({'maxClientConnections': maxClientConnections, 'debounceThreshold': debounceThreshold});//Todo make preferences hydrator
+
         //Starts the Express server
         server = app.listen(port, function () {
             //Server started
@@ -343,9 +363,13 @@ var initializeServer = function(functions, startServer) {
  Websocket stuff
  */
 
+
 //Socket routes
 io.on('connection', function (socket) {
+    //Ensures the socket connections aren't being abused. If it is, skip everything.
+    if(security.socketConnectionThrottle(socket)) return;
     console.log(new Date().toLocaleTimeString() + ' | A user has connected. IP Address: ' + socket.handshake.address +  ' Total users: ' + io.engine.clientsCount);
+
 
     //On connect, send client current info
     socket.emit('receiveWeather', weather);
@@ -356,8 +380,46 @@ io.on('connection', function (socket) {
     /*
     ** Client Requests
     */
-
     socket.on('adminLogin', function(data){
+        adminLogin(data);
+    });
+
+    socket.on('setAdminPassword', function(data){
+        setAdminPassword(data);
+    });
+
+    socket.on('getPasswordResetData', function(){
+        getPasswordResetData();
+    });
+
+    //Sets updated contact information
+    socket.on('storeContacts', function(data){
+        storeContacts(data);
+    });
+
+    //Returns updated announcements on user request
+    socket.on('requestAnnouncements', function(){
+        returnAnnouncements();
+    });
+
+    //Returns updated contacts on user request
+    socket.on('requestContacts', function(){
+        returnContacts();
+    });
+
+    //Sets updated announcement information
+    socket.on('storeAnnouncements', function(data){
+        storeAnnouncements(data);
+    });
+
+    //A user has disconnected
+    socket.on('disconnect', function (data) {
+        security.socketDisconnect(socket);
+        console.log(new Date().toLocaleTimeString() + ' | A user has disconnected. Total users: ' + io.engine.clientsCount);
+    });
+
+    //Socket functions
+    var adminLogin = security.debounce(function(data){
         for(var i = 0; i < adminCredentials.length; i++){
             if(adminCredentials[i].username === data.username && adminCredentials[i].password === data.password){
                 socket.emit('adminLoginResponse', authenticationToken);
@@ -365,10 +427,10 @@ io.on('connection', function (socket) {
                 return;
             }
         }
-       socket.emit('adminLoginResponse', 'denied');
-    });
+        socket.emit('adminLoginResponse', 'denied');
+    }, socket, socketTimeout, true);
 
-    socket.on('setAdminPassword', function(data){
+    var setAdminPassword = security.debounce(function(data){
         for(var i = 0; i < adminCredentials.length; i++){
             if(adminCredentials[i].username == data.username && adminCredentials[i].securityAnswer == data.questionAnswer){
                 adminCredentials[i].password = data.newPassword;
@@ -380,52 +442,42 @@ io.on('connection', function (socket) {
         }
         console.log(new Date().toLocaleTimeString() + ' | Attempted password change for user ' + data.username);
         socket.emit('setPasswordResult', false);
-    });
+    }, socket, socketTimeout, true);
 
-    socket.on('getPasswordResetData', function(data){
+    var getPasswordResetData = security.debounce(function(){
         var adminSecurityCredentials = function(username, securityQuestion){
-                this.username = username;
-                this.securityQuestion = securityQuestion;
+            this.username = username;
+            this.securityQuestion = securityQuestion;
         };
         var admins = [];
 
         for(var i = 0; i < adminCredentials.length; i++){
             admins.push(new adminSecurityCredentials(adminCredentials[i].username, adminCredentials[i].securityQuestion));
         }
-
         socket.emit('receivePasswordResetData', admins);
-    });
+    }, socket, socketTimeout, true);
 
-    //Sets updated contact information
-    socket.on('storeContacts', function(data){
+    var storeContacts = security.debounce(function(data){
         if(data.authentication === authenticationToken){
             setContacts(data.data);
         } else {
             console.log('An unauthenticated attempt at setting data has been made');
         }
-    });
+    }, socket, socketTimeout, true);
 
-    //Returns updated announcements on user request
-    socket.on('requestAnnouncements', function(){
-        socket.emit('receiveAnnouncements', announcements);
-    });
-
-    //Returns updated contacts on user request
-    socket.on('requestContacts', function(){
+    var returnContacts = security.debounce(function(){
         socket.emit('receiveContacts', contacts);
-    });
+    }, socket, socketTimeout, true);
 
-    //Sets updated announcement information
-    socket.on('storeAnnouncements', function(data){
+    var storeAnnouncements = security.debounce(function(data){
         if(data.authentication === authenticationToken){
             setAnnouncements(data.data);
         } else {
             console.log('An unauthenticated attempt at setting data has been made');
         }
-    });
+    }, socket, socketTimeout, true);
 
-    //A user has disconnected
-    socket.on('disconnect', function () {
-        console.log(new Date().toLocaleTimeString() + ' | A user has disconnected. Total users: ' + io.engine.clientsCount);
-    });
+    var returnAnnouncements = security.debounce(function(){
+        socket.emit('receiveAnnouncements', announcements);
+    }, socket, socketTimeout, true);
 });
