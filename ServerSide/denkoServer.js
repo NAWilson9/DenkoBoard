@@ -9,6 +9,7 @@ var fs = require('fs');
 var request = require('request');
 var FeedParser = require('feedparser');
 var security = require('./NicksJSSecurityTools');
+var util = require('util');
 
 //Setup server
 var app = express();
@@ -84,7 +85,7 @@ var getWeather = function(startupCallback){
         if (err){
             setTimeout(function(){
                 console.log('Unable to get weather. Trying again...');
-                getWeather();
+                getWeather(startupCallback);
             }, 1000 * errorCount);
             errorCount++;
             return;
@@ -149,7 +150,9 @@ var getWeather = function(startupCallback){
         //Weather was retrieved, parsed, and pushed successfully
         console.log(new Date().toLocaleTimeString() + ' | Updated weather conditions received, parsed, and pushed.');
         //Handles callback if function is being called on server startup
-        if(startupCallback){ startupCallback() }
+        if(startupCallback){
+            startupCallback();
+        }
     });
     //Schedules weather refresh every 5 minutes
     setTimeout(getWeather, 5 * 60000);
@@ -370,7 +373,6 @@ io.on('connection', function (socket) {
     if(security.socketConnectionThrottle(socket)) return;
     console.log(new Date().toLocaleTimeString() + ' | A user has connected. IP Address: ' + socket.handshake.address +  ' Total users: ' + io.engine.clientsCount);
 
-
     //On connect, send client current info
     socket.emit('receiveWeather', weather);
     socket.emit('receiveAnnouncements', announcements);
@@ -422,7 +424,11 @@ io.on('connection', function (socket) {
     var adminLogin = security.debounce(function(data){
         for(var i = 0; i < adminCredentials.length; i++){
             if(adminCredentials[i].username === data.username && adminCredentials[i].password === data.password){
-                socket.emit('adminLoginResponse', authenticationToken);
+                var test = false;
+                if(!adminCredentials[i].securityQuestion || !adminCredentials[i].securityAnswer){
+                    test = true;
+                }
+                socket.emit('adminLoginResponse', { 'authenticationToken': authenticationToken, 'setQuestions': test});
                 console.log(new Date().toLocaleTimeString() + ' | ' + data.username + ' has logged in.');
                 return;
             }

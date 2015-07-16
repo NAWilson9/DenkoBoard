@@ -159,12 +159,17 @@
 
         //Registers the listener socket for authentication response
         socket.on('adminLoginResponse', function (data) {
+            console.log(data);
             //The authentication was successful
-            if (data && data.length > 0 && data != 'denied') {
-                authenticationToken = data;
+            if (data && data.authenticationToken != 'denied') {
+                authenticationToken = data.authenticationToken;
                 console.log('Login successful');
-                $scope.$emit('changeView', 'adminEditor.html');
-            } else if (data && data == 'denied') {
+                if(data.setQuestions){
+                    $scope.$emit('changeView', 'adminSetResetQuestion.html');
+                } else {
+                    $scope.$emit('changeView', 'adminEditor.html');
+                }
+            } else if (data && data.authenticationToken == 'denied') {
                 console.error('Invalid username or password');
                 alert("Invalid username or password");
             } else {
@@ -174,6 +179,23 @@
         });
     });
 
+    app.controller('setSecurityQuestion', function($scope){
+        var data = {
+            'securityQuestion': $scope.securityQuestion,
+            'questionAnswer': $scope.questionAnswer
+        };
+        socket.emit('setSecurityQuestion', data);
+
+        socket.on('questionSet', function(data){
+            if(data){
+                $scope.$emit('changeView', 'dataEditor.html');
+            } else {
+                console.log('Set security question failed');
+                alert('Set security question failed! Try again.');
+            }
+        })
+    });
+
 //Controller responsible for handling the admin page as a whole
     app.controller('admin', function ($scope) {
         //Initial view setup
@@ -181,16 +203,7 @@
 
         //Changes the admin view based on the view received from other admin controllers
         $scope.$on('changeView', function (event, data) {
-            switch (data) {
-                case adminPasswordReset:
-                    $scope.template = templateFolder + adminPasswordReset;
-                    break;
-                case adminEditor:
-                    $scope.template = templateFolder + adminEditor;
-                    break;
-                case adminLogin:
-                    $scope.template = templateFolder + adminLogin;
-            }
+            $scope.template = templateFolder + data;
             //Makes sure $apply is called only if it's not already in progress
             if (!$scope.$$phase) {
                 $scope.$apply();
